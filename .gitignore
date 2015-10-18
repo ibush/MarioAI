@@ -1,0 +1,8 @@
+*.pyc
+*.aux
+*.log
+*.gz
+*.zip
+*#
+*~
+*.class

@@ -1,0 +1,43 @@
+\documentclass[12pt]{article}
+
+\begin{document}
+
+\title{Project Proposal - Mario Game Agent - Reinforcement learning}
+
+\maketitle
+
+
+\section{Abstract}
+
+For this project we will be implementing various reinforcement algorithms to create learning agents to effectively play a variant of the classic Super Mario Bros game. The game is challenging form a AI standpoint as the environment is stochastic as the levels are randomly generated and the state space is large. To address these challenges we will use Q-learning with various Q function approximations from simplistic feature extractors to deep learning implementations.
+
+\section{Task Definition}
+
+The game is defined by a simulator that receives actions from our controller and outputs various environment attributes. Our controller will extract a state from the environmental attributes and rewards. The rewards will be a combination of metrics such as positive rewards from coins collected, monsters destroyed, level completion and negative rewards for collision and death.
+
+\begin{itemize}
+\item[] \textbf{Actions} - \{ Left, Right, Jump, Crouch, Run/Fire\}
+\item[] \textbf{State}
+\begin{enumerate}
+\item[] Status - Running, Win, Dead
+\item[] Mode - Small, Large, Fire
+\item[] Ground - True, False
+\item[] isAbletoJump - True, False
+\item[] hasShell? - True, False
+\item[] ableToShoot - True, False
+\item[] CreaturePositions - Array of [x,y] coordinates
+\item[] Obstacles - 22x22 array of obstacle type
+\end{enumerate}
+\end{itemize}
+
+\section{Challenges}
+
+The main challenge is to find a optimal policy for Mario to follow given that the map of the environment is not known in advance. The actions which are taken will lead to rewards in future timesteps. Additionally we do not know the transition function thus it would be difficult to use offline methods. We would also like our algorithm to run in real time which means we need to complete all calculations in at most 42ms. It is not apparent what the optimal feature extraction fuction is for this specific problem and this we will experiment with hand crafted feature selection as well as deep learning approaches.
+
+
+\section{Benchmarking}
+
+Our baseline method will be a random action method in which Mario picks a random action with a forward moving bias. We chose this as our baseline method as the controller makes moves regardless of state. Our oracle is an expert human player whos score we will take a max of over several games. We will use our own scores, played under the condition of slower frame frames, as a proxy for this expert human player. The difference between the two bounds should provide a good prospective on the improvement that can be made.
+
+
+\end{document}
