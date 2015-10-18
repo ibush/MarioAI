@@ -144,14 +144,14 @@
         <path refid="${module.jdk.classpath.trunk}"/>
         <pathelement location="${basedir}/lib/jdom.jar"/>
         <pathelement location="${basedir}/lib/junit-4.8.2.jar"/>
-        <pathelement location="${idea.home}/plugins/testng/lib/testng-jdk15.jar"/>
+        <pathelement location="${idea.home}/plugins/Contents/testng/lib/testng-plugin.jar"/>
     </path>
 
     <path id="trunk.runtime.production.module.classpath">
         <pathelement location="${trunk.output.dir}"/>
         <pathelement location="${basedir}/lib/jdom.jar"/>
         <pathelement location="${basedir}/lib/junit-4.8.2.jar"/>
-        <pathelement location="${idea.home}/plugins/testng/lib/testng-jdk15.jar"/>
+        <pathelement location="${idea.home}/plugins/Contents/testng/lib/testng-plugin.jar"/>
     </path>
 
     <path id="trunk.module.classpath">
@@ -159,14 +159,14 @@
         <pathelement location="${trunk.output.dir}"/>
         <pathelement location="${basedir}/lib/jdom.jar"/>
         <pathelement location="${basedir}/lib/junit-4.8.2.jar"/>
-        <pathelement location="${idea.home}/plugins/testng/lib/testng-jdk15.jar"/>
+        <pathelement location="${idea.home}/plugins/Contents/testng/lib/testng-plugin.jar"/>
     </path>
 
     <path id="trunk.runtime.module.classpath">
         <pathelement location="${trunk.output.dir}"/>
         <pathelement location="${basedir}/lib/jdom.jar"/>
         <pathelement location="${basedir}/lib/junit-4.8.2.jar"/>
-        <pathelement location="${idea.home}/plugins/testng/lib/testng-jdk15.jar"/>
+        <pathelement location="${idea.home}/plugins/Contents/testng/lib/testng-plugin.jar"/>
     </path>
 
 
