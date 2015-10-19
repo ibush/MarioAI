@@ -24,15 +24,15 @@ For this project we will be implementing various reinforcement learning algorith
 
 \section{Task Definition}
 
-The game is defined by a simulator that receives actions from our controller and outputs various environment attributes. The goal of an agent is to maximize the fitness score from taking actions and receiving feedback from the simulator. The fitness score will be defined as a weighted combination of certain states (collecting coins, destroying monsters, etc.) which will accumulate throughout the round.
+The game is defined by a simulator that receives actions from our controller and outputs various environment attributes. The goal of an agent is to maximize the fitness score from taking actions (left, right, jump, etc.) and receiving feedback from the simulator. The fitness score will be defined as a weighted combination of certain states (collecting coins, destroying monsters, etc.) which will accumulate throughout the round.
 
 %We will experiment with different types of feedback the simulator will provide the agent with respect to rewards. One way is an incremental approach where the agent accumulates rewards from multiple states in the game (collecting coins, destroying monsters, etc.). Another approach is to only provide reward feedback at the end of the game in the form of a final fitness score. 
 
-In addition to the randomly generated levels, the simulator also provides up to 40 different difficultly levels. We may evaluate our controller by running it on multiple game levels and determining it's overall fitness score as well as a simple distance travelled metric to compare with our benchmarks, described in a later section.
+In addition to the randomly generated levels, the simulator also provides up to 40 different difficulty levels. We may evaluate our controller by running it on multiple game levels and determining its overall fitness score as well as a simple distance travelled metric to compare with our benchmarks, described in a later section.
 
 \section{Previous Work}
 
-The Mario AI competition ran for a few years, but few submissions used reinforcement learning. The winning controllers used A* search since the initial metric only took into account distance travelled and the controllers were not required to learn from scratch. Next-highest ranking controllers used rule-based heuristics \cite{karakovskiy}. In the years since competition, a group has implemented a reinforcement learning algorithm that managed to outperform the rule-based controllers, but still fell short of the A* scores \cite{tsay}. We hope to explore different state and feature definitions than were used in that study, and to extend the algorithms to use deep learning as was done for the Atari games \cite{mnih}.
+The Mario AI competition ran for a few years, but few submissions used reinforcement learning. The winning controllers used A* search since the initial metric only took into account distance travelled and the controllers were not required to learn from scratch. Next-highest ranking controllers used rule-based heuristics \cite{karakovskiy}. In the years since the competition, a group has implemented a reinforcement learning algorithm that managed to outperform the rule-based controllers, but still fell short of the A* scores \cite{tsay}. We hope to explore different state and feature definitions than were used in that study, and to extend the algorithms to use deep learning as was done for the Atari games \cite{mnih}.
 
 
 %\begin{itemize}
@@ -53,7 +53,7 @@ The Mario AI competition ran for a few years, but few submissions used reinforce
 
 \section{Challenges}
 
-The main challenge is to find an optimal policy for the agent to follow given that the map of the environment is not known in advance, and actions have a delayed feedback. Since the state transition function is unknown to the controller, it would be difficult to use offline methods -- the controller must learn as it plays. 
+The main challenge is to find an optimal policy for the agent to follow given that the map of the environment is not known in advance, and actions may have delayed feedback. Since the state transition function is unknown to the controller, it would be difficult to use offline methods -- the controller must learn as it plays. 
 
 Another challenge is creating an algorithm to run in real time, defined by at most 42 ms per frame. Finally, it is not apparent what the optimal feature extraction function is for this specific problem and thus we will experiment with hand-crafted feature selection as well as deep learning techniques.
 
