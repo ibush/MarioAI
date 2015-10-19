@@ -54,7 +54,7 @@ public void reset()
     // Dummy reset, of course, but meet formalities!
     R = new Random();
 }
-
+/*
 public boolean[] getAction()
 {
     boolean[] ret = new boolean[Environment.numberOfKeys];
@@ -73,4 +73,17 @@ public boolean[] getAction()
         ret[0] = false;
     return ret;
 }
+*/
+//Random Agent used as baseline (doesn't move to left)
+    public boolean[] getAction()
+    {
+        boolean[] ret = new boolean[Environment.numberOfKeys];
+
+        for (int i = 0; i < Environment.numberOfKeys; ++i)
+        {
+            ret[i] = R.nextBoolean();
+        }
+        ret[0] = false;
+        return ret;
+    }
 }

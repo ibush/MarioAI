@@ -36,6 +36,8 @@ import ch.idsia.tools.MarioAIOptions;
 import ch.idsia.tools.punj.PunctualJudge;
 import ch.idsia.utils.statistics.StatisticalSummary;
 
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.Vector;
 
 /**
@@ -65,8 +67,23 @@ public BasicTask(MarioAIOptions marioAIOptions)
  * @param repetitionsOfSingleEpisode
  * @return boolean flag whether controller is disqualified or not
  */
-public boolean runSingleEpisode(final int repetitionsOfSingleEpisode)
+public boolean runSingleEpisode(final int repetitionsOfSingleEpisode) {
+    return runSingleEpisode(repetitionsOfSingleEpisode, false);
+}
+
+//Output to file will print  weighted fitness and distance scores for all runs to text files
+public boolean runSingleEpisode(final int repetitionsOfSingleEpisode, boolean outputToFile)
 {
+    PrintWriter fitnessScores = null;
+    PrintWriter distance = null;
+    if(outputToFile) {
+        try {
+            fitnessScores = new PrintWriter("fitnessScoresOutput", "UTF-8");
+            distance = new PrintWriter("distanceOutput", "UTF-8");
+        } catch (Exception e) {
+            System.out.println("Could not open output files");
+        }
+    }
     long c = System.currentTimeMillis();
     for (int r = 0; r < repetitionsOfSingleEpisode; ++r)
     {
@@ -83,7 +100,7 @@ public boolean runSingleEpisode(final int repetitionsOfSingleEpisode)
                 boolean[] action = agent.getAction();
                 if (System.currentTimeMillis() - c > COMPUTATION_TIME_BOUND)
                     return false;
-//                System.out.println("action = " + Arrays.toString(action));
+//               System.out.println("action = " + Arrays.toString(action));
 //            environment.setRecording(GlobalOptions.isRecording);
                 environment.performAction(action);
             }
@@ -91,8 +108,12 @@ public boolean runSingleEpisode(final int repetitionsOfSingleEpisode)
         environment.closeRecorder(); //recorder initialized in environment.reset
         environment.getEvaluationInfo().setTaskName(name);
         this.evaluationInfo = environment.getEvaluationInfo().clone();
+        if(fitnessScores != null) fitnessScores.println(environment.getEvaluationInfo().computeWeightedFitness());
+        if(distance!= null) distance.println(environment.getEvaluationInfo().computeDistancePassed());
     }
 
+    if(fitnessScores != null) fitnessScores.close();
+    if(distance != null) distance.close();
     return true;
 }
 

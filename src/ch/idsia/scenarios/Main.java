@@ -54,7 +54,9 @@ public static void main(String[] args)
 //                marioAIOptions.setLevelRandSeed(seed++);
     basicTask.setOptionsAndReset(marioAIOptions);
 //    basicTask.runSingleEpisode(1);
-    basicTask.doEpisodes(1,true,1);
+
+    basicTask.doEpisodes(1,true,1); //Modify the third argument for multiple runs of episode
+
 //    System.out.println(basicTask.getEnvironment().getEvaluationInfoAsString());
 //            } while (basicTask.getEnvironment().getEvaluationInfo().marioStatus != Environment.MARIO_STATUS_WIN);
 //        }
