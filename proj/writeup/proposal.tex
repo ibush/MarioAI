@@ -1,18 +1,16 @@
 \documentclass[12pt]{article}
 
 \usepackage{amsmath, graphicx}
-\usepackage[backend=bibtex]{biblatex}
-\addbibresource{cs221proj.bib}
 
 \begin{document}
 \nocite{*}
 
-\title{Project Proposal - Deep Reinforcement on Super Mario Bros}
+\title{Project Proposal - Deep Reinforcement Learning on Super Mario Bros}
 
 \author{
   Matthew Chen
   \and
-  Isabel Frances Bush
+  Isabel Bush
 }
 \date{}
 \maketitle
@@ -20,21 +18,24 @@
 
 \section{Abstract}
 
-For this project we will be implementing various reinforcement algorithms to create learning agents to effectively play a variant of the classic Super Mario Bros game. The game is challenging form a AI standpoint as the environment is stochastic as the levels are randomly generated and the state space is large. To address these challenges we will use Q-learning with various Q function approximations from simplistic feature extractors to deep learning implementations.
+For this project we will be implementing various reinforcement learning algorithms to create learning agents to effectively play a variant of the classic Super Mario Bros game. The game is challenging from an AI standpoint as the environment is stochastic with randomly generated levels, and the state space is large. To address these challenges we will use Q-learning with various Q-function approximations ranging from simplistic feature extractors to deep learning implementations.
 
 \section{Task Definition}
 
-The game is defined by a simulator that receives actions from our controller and outputs various environment attributes. Our controller will extract a state from the environmental attributes and rewards. The rewards will be a combination of metrics such as positive rewards from coins collected, monsters destroyed, level completion and negative rewards for collision and death.
+The game is defined by a simulator that receives actions from our controller and outputs various environment attributes. Our controller will extract state and rewards from the environmental attributes and send Mario control actions back to the simulator based on the learned policy. 
+
+We will test out inputting rewards to our controller at each step as a combination of metrics (such as positive rewards from coins collected, monsters destroyed, level completion and negative rewards for collision and death) or simply providing the final fitness score as a reward at the end of the game. We may evaluate our controller by running it on multiple game levels and determining it's overall fitness score (combination of bonuses collected, monsters killed, and distance travelled), as well as a simple distance travelled metric to compare with our benchmarks, described in a later section.
 
 \begin{itemize}
-\item[] \textbf{Actions} - \{ Left, Right, Jump, Crouch, Run/Fire\}
-\item[] \textbf{State}
+\item[] \textbf{Actions}: \{ Left, Right, Jump, Crouch, Run/Fire \}
+\item[] \textbf{State}:
+\itemsep0em
 \begin{enumerate}
-\item[] Status - Running, Win, Dead
+\item[] Status - Running, Won, Dead
 \item[] Mode - Small, Large, Fire
-\item[] Ground - True, False
+\item[] onGround - True, False
 \item[] isAbletoJump - True, False
-\item[] hasShell? - True, False
+\item[] hasShell - True, False
 \item[] ableToShoot - True, False
 \item[] CreaturePositions - Array of [x,y] coordinates
 \item[] Obstacles - 22x22 array of obstacle type
@@ -43,13 +44,32 @@ The game is defined by a simulator that receives actions from our controller and
 
 \section{Challenges}
 
-The main challenge is to find a optimal policy for Mario to follow given that the map of the environment is not known in advance. The actions which are taken will lead to rewards in future time steps. Additionally we do not know the transition function thus it would be difficult to use offline methods. We would also like our algorithm to run in real time which means we need to complete all calculations in at most 42 ms. It is not apparent what the optimal feature extraction function is for this specific problem and this we will experiment with hand crafted feature selection as well as deep learning approaches.
+The main challenge is to find an optimal policy for Mario to follow given that the map of the environment is not known in advance, and the actions which are taken will lead to rewards in future time steps. Since the state transition function is unknown to the controller, it would be difficult to use offline methods -- the controller must learn as it plays. 
 
+Another challenge is that we would like our algorithm to run in real time, which means we need to complete all calculations in at most 42 ms given the simulation frame rate. Finally, it is not apparent what the optimal feature extraction function is for this specific problem and thus we will experiment with handcrafted feature selection as well as deep learning techniques.
+
+\section{Approaches}
+
+To address the aforementioned challenges, we will implement reinforcement learning algorithms, which are well-suited to Markov Decision Processes with unknown transition probabilities. We will use Q-learning so that we may calculate the optimal Q-value (and thus optimal policy) directly, without needing to first calculate estimations of transitions and rewards. 
+
+Since the state-space is large and our controller is unlikely to experience all possible states, we will use function approximation to generalize to unseen states. We will begin by defining our own features based on simplifications and combinations of the provided environment attributes, and then we will explore learning the feature vector as well through a neural network representation.
 
 \section{Benchmarking}
 
-Our baseline method will be a random action method in which Mario picks a random action with a forward moving bias. We chose this as our baseline method as the controller makes moves regardless of state. We use as our oracle the winning scores for the 2009 Mario AI competition \cite{karakovskiy2012mario}. The difference between the two bounds should provide a good prospective on the improvement that can be made. The base metric that we will use to start off is the distance the agent was able to progress at a given level summed across all levels. Our baseline agent averaged at 13,713 while the score for our oracle was 17,264.
+Our baseline method will be a random policy in which Mario picks a random action with a forward moving bias. We chose this as our baseline method since the controller chooses actions regardless of state or reward. We use as our oracle the winning scores for the 2009 Mario AI competition \cite{karakovskiy}. The difference between the two bounds should provide a good prospective on the improvement that can be made with our learning controller. The base metric that we will use to start off is the distance the agent was able to progress at a given level summed across all levels. Our baseline agent averaged 13,713 while the score for our oracle was 46,565.
 
-\printbibliography
+\section{Previous Work}
+
+The Mario AI competition ran for a few years, but few submissions used reinforcement learning. The winning controllers used A* search since the initial metric only took into account distance travelled and the controllers were not required to learn from scratch. Next-highest ranking controllers used rule-based heuristics \cite{karakovskiy}. In the years since competition, a group has implemented a reinforcement learning algorithm that managed to outperform the rule-based controllers, but still fell short of the A* scores \cite{tsay}. We hope to explore different state and feature definitions than were used in that study, and to extend the algorithms to use deep learning as was done for the Atari games \cite{mnih}.
+
+\begin{thebibliography}{1}
+
+\bibitem{karakovskiy} S. Karakovskiy, J. Togelius {\em The Mario AI Benchmark and Competitions} 2012.
+
+\bibitem{tsay}  J. Tsay, C. Chen, J. Hsu {\em Evolving Intelligent Mario Controller by Reinforcement Learning} 2011.
+
+\bibitem{mnih} V. Mnih, K. Kavukcuoglu, D. Silver, A. Graves, I. Antonoglou, D. Wierstra, M. Riedmiller {\em Playing Atari with Deep Reinforcement Learning} 2013.
+
+\end{thebibliography}
 
 \end{document}
