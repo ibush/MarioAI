@@ -1,6 +1,7 @@
 \documentclass[12pt]{article}
 
 \usepackage{amsmath, graphicx}
+\usepackage[margin=1in]{geometry}
 
 \begin{document}
 \nocite{*}
@@ -20,33 +21,41 @@
 
 For this project we will be implementing various reinforcement learning algorithms to create learning agents to effectively play a variant of the classic Super Mario Bros game. The game is challenging from an AI standpoint as the environment is stochastic with randomly generated levels, and the state space is large. To address these challenges we will use Q-learning with various Q-function approximations ranging from simplistic feature extractors to deep learning implementations.
 
+
 \section{Task Definition}
 
-The game is defined by a simulator that receives actions from our controller and outputs various environment attributes. Our controller will extract state and rewards from the environmental attributes and send Mario control actions back to the simulator based on the learned policy. 
+The game is defined by a simulator that receives actions from our controller and outputs various environment attributes. The goal of an agent is to maximize the fitness score from taking actions and receiving feedback from the simulator. The fitness score will be defined as a weighted combination of certain states (collecting coins, destroying monsters, etc.) which will accumulate throughout the round.
 
-We will test out inputting rewards to our controller at each step as a combination of metrics (such as positive rewards from coins collected, monsters destroyed, level completion and negative rewards for collision and death) or simply providing the final fitness score as a reward at the end of the game. We may evaluate our controller by running it on multiple game levels and determining it's overall fitness score (combination of bonuses collected, monsters killed, and distance travelled), as well as a simple distance travelled metric to compare with our benchmarks, described in a later section.
+%We will experiment with different types of feedback the simulator will provide the agent with respect to rewards. One way is an incremental approach where the agent accumulates rewards from multiple states in the game (collecting coins, destroying monsters, etc.). Another approach is to only provide reward feedback at the end of the game in the form of a final fitness score. 
 
-\begin{itemize}
-\item[] \textbf{Actions}: \{ Left, Right, Jump, Crouch, Run/Fire \}
-\item[] \textbf{State}:
-\itemsep0em
-\begin{enumerate}
-\item[] Status - Running, Won, Dead
-\item[] Mode - Small, Large, Fire
-\item[] onGround - True, False
-\item[] isAbletoJump - True, False
-\item[] hasShell - True, False
-\item[] ableToShoot - True, False
-\item[] CreaturePositions - Array of [x,y] coordinates
-\item[] Obstacles - 22x22 array of obstacle type
-\end{enumerate}
-\end{itemize}
+In addition to the randomly generated levels, the simulator also provides up to 40 different difficultly levels. We may evaluate our controller by running it on multiple game levels and determining it's overall fitness score as well as a simple distance travelled metric to compare with our benchmarks, described in a later section.
+
+\section{Previous Work}
+
+The Mario AI competition ran for a few years, but few submissions used reinforcement learning. The winning controllers used A* search since the initial metric only took into account distance travelled and the controllers were not required to learn from scratch. Next-highest ranking controllers used rule-based heuristics \cite{karakovskiy}. In the years since competition, a group has implemented a reinforcement learning algorithm that managed to outperform the rule-based controllers, but still fell short of the A* scores \cite{tsay}. We hope to explore different state and feature definitions than were used in that study, and to extend the algorithms to use deep learning as was done for the Atari games \cite{mnih}.
+
+
+%\begin{itemize}
+%\item[] \textbf{Actions}: \{ Left, Right, Jump, Crouch, Run/Fire \}
+%\item[] \textbf{State}:
+%\itemsep0em
+%\begin{enumerate}
+%\item[] Status - Running, Won, Dead
+%\item[] Mode - Small, Large, Fire
+%\item[] onGround - True, False
+%\item[] isAbletoJump - True, False
+%\item[] hasShell - True, False
+%\item[] ableToShoot - True, False
+%\item[] CreaturePositions - Array of [x,y] coordinates
+%\item[] Obstacles - 22x22 array of obstacle type
+%\end{enumerate}
+%\end{itemize}
 
 \section{Challenges}
 
-The main challenge is to find an optimal policy for Mario to follow given that the map of the environment is not known in advance, and the actions which are taken will lead to rewards in future time steps. Since the state transition function is unknown to the controller, it would be difficult to use offline methods -- the controller must learn as it plays. 
+The main challenge is to find an optimal policy for the agent to follow given that the map of the environment is not known in advance, and actions have a delayed feedback. Since the state transition function is unknown to the controller, it would be difficult to use offline methods -- the controller must learn as it plays. 
 
-Another challenge is that we would like our algorithm to run in real time, which means we need to complete all calculations in at most 42 ms given the simulation frame rate. Finally, it is not apparent what the optimal feature extraction function is for this specific problem and thus we will experiment with handcrafted feature selection as well as deep learning techniques.
+Another challenge is creating an algorithm to run in real time, defined by at most 42 ms per frame. Finally, it is not apparent what the optimal feature extraction function is for this specific problem and thus we will experiment with hand-crafted feature selection as well as deep learning techniques.
 
 \section{Approaches}
 
@@ -58,9 +67,6 @@ Since the state-space is large and our controller is unlikely to experience all 
 
 Our baseline method will be a random policy in which Mario picks a random action with a forward moving bias. We chose this as our baseline method since the controller chooses actions regardless of state or reward. We use as our oracle the winning scores for the 2009 Mario AI competition \cite{karakovskiy}. The difference between the two bounds should provide a good prospective on the improvement that can be made with our learning controller. The base metric that we will use to start off is the distance the agent was able to progress at a given level summed across all levels. Our baseline agent averaged 13,713 while the score for our oracle was 46,565.
 
-\section{Previous Work}
-
-The Mario AI competition ran for a few years, but few submissions used reinforcement learning. The winning controllers used A* search since the initial metric only took into account distance travelled and the controllers were not required to learn from scratch. Next-highest ranking controllers used rule-based heuristics \cite{karakovskiy}. In the years since competition, a group has implemented a reinforcement learning algorithm that managed to outperform the rule-based controllers, but still fell short of the A* scores \cite{tsay}. We hope to explore different state and feature definitions than were used in that study, and to extend the algorithms to use deep learning as was done for the Atari games \cite{mnih}.
 
 \begin{thebibliography}{1}
 
