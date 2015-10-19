@@ -1,9 +1,20 @@
 \documentclass[12pt]{article}
 
+\usepackage{amsmath, graphicx}
+\usepackage[backend=bibtex]{biblatex}
+\addbibresource{cs221proj.bib}
+
 \begin{document}
+\nocite{*}
 
-\title{Project Proposal - Mario Game Agent - Reinforcement learning}
+\title{Project Proposal - Deep Reinforcement on Super Mario Bros}
 
+\author{
+  Matthew Chen
+  \and
+  Isabel Frances Bush
+}
+\date{}
 \maketitle
 
 
@@ -32,12 +43,13 @@ The game is defined by a simulator that receives actions from our controller and
 
 \section{Challenges}
 
-The main challenge is to find a optimal policy for Mario to follow given that the map of the environment is not known in advance. The actions which are taken will lead to rewards in future timesteps. Additionally we do not know the transition function thus it would be difficult to use offline methods. We would also like our algorithm to run in real time which means we need to complete all calculations in at most 42ms. It is not apparent what the optimal feature extraction fuction is for this specific problem and this we will experiment with hand crafted feature selection as well as deep learning approaches.
+The main challenge is to find a optimal policy for Mario to follow given that the map of the environment is not known in advance. The actions which are taken will lead to rewards in future time steps. Additionally we do not know the transition function thus it would be difficult to use offline methods. We would also like our algorithm to run in real time which means we need to complete all calculations in at most 42 ms. It is not apparent what the optimal feature extraction function is for this specific problem and this we will experiment with hand crafted feature selection as well as deep learning approaches.
 
 
 \section{Benchmarking}
 
-Our baseline method will be a random action method in which Mario picks a random action with a forward moving bias. We chose this as our baseline method as the controller makes moves regardless of state. Our oracle is an expert human player whos score we will take a max of over several games. We will use our own scores, played under the condition of slower frame frames, as a proxy for this expert human player. The difference between the two bounds should provide a good prospective on the improvement that can be made.
+Our baseline method will be a random action method in which Mario picks a random action with a forward moving bias. We chose this as our baseline method as the controller makes moves regardless of state. We use as our oracle the winning scores for the 2009 Mario AI competition \cite{karakovskiy2012mario}. The difference between the two bounds should provide a good prospective on the improvement that can be made. The base metric that we will use to start off is the distance the agent was able to progress at a given level summed across all levels. Our baseline agent averaged at 13,713 while the score for our oracle was 17,264.
 
+\printbibliography
 
 \end{document}
