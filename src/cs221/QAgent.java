@@ -3,6 +3,8 @@ package cs221;
 import ch.idsia.agents.Agent;
 import ch.idsia.benchmark.mario.environments.Environment;
 
+import java.util.HashMap;
+
 //import java.util.Random;
 
 
@@ -18,6 +20,8 @@ public abstract class QAgent implements Agent{
     protected int receptiveFieldHeight;
     protected int marioEgoRow;
     protected int marioEgoCol;
+
+    protected HashMap learnedParams;
 
     public QAgent(String name){
         this.name = name;
@@ -68,4 +72,11 @@ public abstract class QAgent implements Agent{
         this.name = name;
     }
 
+    public HashMap getLearnedParams(){
+        return this.learnedParams;
+    }
+
+    public void setLearnedParams(HashMap learnedParams){
+        this.learnedParams = learnedParams;
+    }
 }
