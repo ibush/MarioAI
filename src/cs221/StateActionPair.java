@@ -1,22 +1,37 @@
 package cs221;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 /**
  * Created by ibush on 10/25/15.
  */
 public class StateActionPair {
     private int[] state;
-    private boolean[] actions;
+    private boolean[] action;
 
-    public StateActionPair(int[] state, boolean[] actions) {
+    public StateActionPair(int[] state, boolean[] action) {
         this.state = state;
-        this.actions = actions;
+        this.action = action;
     }
 
     @Override
     public boolean equals(Object object) {
         if (!(object instanceof StateActionPair)) return false;
+        if (object == this) return true;
         StateActionPair other = (StateActionPair) object;
-        return other.actions == this.actions && other.state == this.state;
+        return new EqualsBuilder()
+                    .append(state, other.state)
+                    .append(action, other.action)
+                    .isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder()
+                .append(state)
+                .append(action)
+                .toHashCode();
     }
 
     public int[] getState() {
@@ -24,6 +39,6 @@ public class StateActionPair {
     }
 
     public boolean[] getActions() {
-        return actions;
+        return action;
     }
 }
