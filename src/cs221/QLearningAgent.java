@@ -1,9 +1,8 @@
-package ch.idsia.agents.controllers;
+package cs221;
 
 import ch.idsia.agents.Agent;
 import ch.idsia.benchmark.mario.environments.Environment;
-
-import java.util.Random;
+import cs221.QAgent;
 
 
 /**
