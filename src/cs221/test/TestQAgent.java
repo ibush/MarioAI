@@ -1,7 +1,7 @@
 package cs221.test;
 
-import java.util.LinkedList;
-import cs221.QAgent;
+import java.util.ArrayList;
+
 import cs221.QLearningAgent;
 
 /**
@@ -11,14 +11,14 @@ public class TestQAgent {
     public static void main(String[] args) {
 
         QLearningAgent agent = new QLearningAgent();
-        LinkedList<boolean[]> all_actions = agent.getPossibleActions(null);
+        ArrayList<boolean[]> allActions = agent.getPossibleActions(null);
         System.out.println("Printing all possible actions...");
-        for(int i=0; i<all_actions.size(); i++){
-            print_bool_arr(all_actions.get(i));
+        for(int i=0; i<allActions.size(); i++){
+            printBoolArr(allActions.get(i));
         }
     }
 
-    private static void  print_bool_arr(boolean[] arr){
+    private static void printBoolArr(boolean[] arr){
         for(int i=1; i<arr.length; i++){
             System.out.printf("%b, ",arr[i]);
         }

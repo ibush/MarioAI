@@ -33,11 +33,10 @@ import ch.idsia.benchmark.mario.environments.Environment;
 import ch.idsia.benchmark.mario.environments.MarioEnvironment;
 import ch.idsia.tools.EvaluationInfo;
 import ch.idsia.tools.MarioAIOptions;
-import ch.idsia.tools.punj.PunctualJudge;
 import ch.idsia.utils.statistics.StatisticalSummary;
-
-import java.io.FileNotFoundException;
+import cs221.QAgent;
 import java.io.PrintWriter;
+import java.util.HashMap;
 import java.util.Vector;
 
 /**
@@ -50,6 +49,7 @@ import java.util.Vector;
 public class BasicTask implements Task
 {
 protected final static Environment environment = MarioEnvironment.getInstance();
+private HashMap learnedParams;
 private Agent agent;
 protected MarioAIOptions options;
 private long COMPUTATION_TIME_BOUND = 42; // stands for prescribed  FPS 24.
@@ -94,6 +94,7 @@ public boolean runSingleEpisode(final int repetitionsOfSingleEpisode, boolean ou
             if (!GlobalOptions.isGameplayStopped)
             {
                 c = System.currentTimeMillis();
+                if(agent instanceof QAgent ) ((QAgent)agent).setLearnedParams(learnedParams);
                 agent.integrateObservation(environment);
                 agent.giveIntermediateReward(environment.getIntermediateReward());
 
@@ -103,6 +104,7 @@ public boolean runSingleEpisode(final int repetitionsOfSingleEpisode, boolean ou
 //               System.out.println("action = " + Arrays.toString(action));
 //            environment.setRecording(GlobalOptions.isRecording);
                 environment.performAction(action);
+                if(agent instanceof QAgent ) learnedParams = ((QAgent)agent).getLearnedParams();
             }
         }
         environment.closeRecorder(); //recorder initialized in environment.reset
@@ -175,6 +177,7 @@ public void reset()
             environment.getReceptiveFieldHeight(),
             environment.getMarioEgoPos()[0],
             environment.getMarioEgoPos()[1]);
+    if(agent instanceof QAgent ) learnedParams = new HashMap();
 }
 
 public String getName()

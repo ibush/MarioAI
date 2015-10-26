@@ -3,6 +3,7 @@ package cs221;
 import ch.idsia.agents.Agent;
 import ch.idsia.benchmark.mario.environments.Environment;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 
@@ -16,7 +17,7 @@ import java.util.LinkedList;
 public abstract class QAgent implements Agent{
 
     protected String name;
-    protected boolean[] action = new boolean[Environment.numberOfKeys];// Empty action
+    //protected boolean[] action = new boolean[Environment.numberOfKeys];// Empty action
     protected int receptiveFieldWidth;
     protected int receptiveFieldHeight;
     protected int marioEgoRow;
@@ -33,8 +34,8 @@ public abstract class QAgent implements Agent{
      * @param env
      * @return List of all possible actions from a given state
      */
-    public LinkedList<boolean[]> getPossibleActions(Environment env){
-        LinkedList<boolean[]> result = new LinkedList<boolean[]>();
+    public ArrayList<boolean[]> getPossibleActions(Environment env){
+        ArrayList<boolean[]> result = new ArrayList<boolean[]>();
         // Currently enumerates all action combinations without filter
         int num = Environment.numberOfKeys;
         for(int i = 0; i < 2; i++){
@@ -62,7 +63,7 @@ public abstract class QAgent implements Agent{
      * just implement an empty method for a reactive controller
      */
     public void reset(){
-        action = new boolean[Environment.numberOfKeys];// Empty action
+        //action = new boolean[Environment.numberOfKeys];// Empty action
     }
 
     public void setObservationDetails(int rfWidth, int rfHeight, int egoRow, int egoCol){

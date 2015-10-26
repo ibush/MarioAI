@@ -38,7 +38,7 @@ public class StateActionPair {
         return state;
     }
 
-    public boolean[] getActions() {
+    public boolean[] getAction() {
         return action;
     }
 }
