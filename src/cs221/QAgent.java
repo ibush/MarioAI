@@ -4,6 +4,7 @@ import ch.idsia.agents.Agent;
 import ch.idsia.benchmark.mario.environments.Environment;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 
 //import java.util.Random;
 
@@ -28,20 +29,28 @@ public abstract class QAgent implements Agent{
     }
 
     /**
-     * For use in calculating the Q approximation functions
-     * @param environment - from game state interface
-     * @return vector of all env state variables - order is consistent but not important
+     *
+     * @param env
+     * @return List of all possible actions from a given state
      */
-    int[] getStateVec(Environment environment){
-
-        int ZLevelScene = 2;
-        int ZLevelEnemies = 2;
-
-        // ZlevelScene takes values [0,2] - from most to least detail
-        // More info found at http://www.marioai.org/gameplay-track/marioai-benchmark
-        int[] vec =  environment.getSerializedFullObservationZZ(ZLevelScene, ZLevelEnemies);
-
-    return(vec);
+    public LinkedList<boolean[]> getPossibleActions(Environment env){
+        LinkedList<boolean[]> result = new LinkedList<boolean[]>();
+        // Currently enumerates all action combinations without filter
+        int num = Environment.numberOfKeys;
+        for(int i = 0; i < 2; i++){
+            for(int j = 0; j < 2; j++){
+                for(int k = 0; k < 2; k++){
+                    for(int l = 0; l < 2; l++){
+                        for(int m = 0; m < 2; m++){
+                            for(int n = 0; n < 2; n++){
+                                result.add(new boolean[]{i!=0, j!=0, k!=0, l!=0, m!=0, n!=0});
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return(result);
     }
 
     public void giveIntermediateReward(float intermediateReward){
