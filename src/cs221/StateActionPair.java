@@ -6,7 +6,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 /**
  * Created by ibush on 10/25/15.
  */
-public class StateActionPair {
+public class StateActionPair implements java.io.Serializable {
     private int[] state;
     private boolean[] action;
 

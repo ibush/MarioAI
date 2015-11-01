@@ -35,8 +35,10 @@ import ch.idsia.tools.EvaluationInfo;
 import ch.idsia.tools.MarioAIOptions;
 import ch.idsia.utils.statistics.StatisticalSummary;
 import cs221.QAgent;
-import java.io.PrintWriter;
+
+import java.io.*;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Vector;
 
 /**
@@ -68,7 +70,7 @@ public BasicTask(MarioAIOptions marioAIOptions)
  * @return boolean flag whether controller is disqualified or not
  */
 public boolean runSingleEpisode(final int repetitionsOfSingleEpisode) {
-    return runSingleEpisode(repetitionsOfSingleEpisode, false);
+    return runSingleEpisode(repetitionsOfSingleEpisode, true);
 }
 
 //Output to file will print  weighted fitness and distance scores for all runs to text files
@@ -99,8 +101,12 @@ public boolean runSingleEpisode(final int repetitionsOfSingleEpisode, boolean ou
                 agent.giveIntermediateReward(environment.getIntermediateReward());
 
                 boolean[] action = agent.getAction();
-                if (System.currentTimeMillis() - c > COMPUTATION_TIME_BOUND)
+                /*
+                if (System.currentTimeMillis() - c > COMPUTATION_TIME_BOUND) {
+                    System.out.println("Ran " + r + " episodes");
                     return false;
+                }
+                */
 //               System.out.println("action = " + Arrays.toString(action));
 //            environment.setRecording(GlobalOptions.isRecording);
                 environment.performAction(action);
@@ -141,26 +147,49 @@ public void setOptionsAndReset(final String options)
     reset();
 }
 
-public void doEpisodes(int amount, boolean verbose, final int repetitionsOfSingleEpisode)
-{
-    for (int j = 0; j < EvaluationInfo.numberOfElements; j++)
-    {
+public void doEpisodes(int amount, boolean verbose, final int repetitionsOfSingleEpisode) {
+    learnedParams = new HashMap();
+
+    if(agent instanceof QAgent ) {
+        try{
+            //read params from file
+            File file = new File("params");
+            ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file));
+            learnedParams = (HashMap)ois.readObject();
+            ois.close();
+        }catch(Exception e){
+            //Starting learning from scratch
+            System.out.println("Starting learning from scratch");
+            learnedParams = new HashMap();
+        }
+    }
+
+    for (int j = 0; j < EvaluationInfo.numberOfElements; j++) {
         statistics.addElement(new StatisticalSummary());
     }
-    for (int i = 0; i < amount; ++i)
-    {
+    for (int i = 0; i < amount; ++i) {
         this.reset();
         this.runSingleEpisode(repetitionsOfSingleEpisode);
         if (verbose)
             System.out.println(environment.getEvaluationInfoAsString());
 
-        for (int j = 0; j < EvaluationInfo.numberOfElements; j++)
-        {
+        for (int j = 0; j < EvaluationInfo.numberOfElements; j++) {
             statistics.get(j).add(environment.getEvaluationInfoAsInts()[j]);
         }
     }
 
     System.out.println(statistics.get(3).toString());
+
+    if (agent instanceof QAgent) {
+    //Save params to file
+        try {
+            ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("params"));
+            out.writeObject(learnedParams);
+            out.close();
+        } catch (IOException e) {
+            System.out.println("Could not write params to file");
+        }
+    }
 }
 
 public boolean isFinished()
@@ -177,7 +206,6 @@ public void reset()
             environment.getReceptiveFieldHeight(),
             environment.getMarioEgoPos()[0],
             environment.getMarioEgoPos()[1]);
-    if(agent instanceof QAgent ) learnedParams = new HashMap();
 }
 
 public String getName()
