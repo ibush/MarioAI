@@ -7,10 +7,7 @@ import java.awt.*;
  */
 public class Matrix {
 
-    public static float[][] subtract(float[][] m1, float[][] m2) throws Exception {
-        if ((m1.length != m2.length) || (m1[0].length != m2[0].length)) {
-            throw new Exception("Matrices must be same dimensions");
-        }
+    public static float[][] subtract(float[][] m1, float[][] m2) {
         float[][] result = new float[m1.length][m1[0].length];
         for(int i = 0; i < m1.length; i++ ) {
             for(int j = 0; j < m1[i].length; j++) {
@@ -20,10 +17,7 @@ public class Matrix {
         return result;
     }
 
-    public static float[][] add(float[][] m1, float[][] m2) throws Exception {
-        if ((m1.length != m2.length) || (m1[0].length != m2[0].length)) {
-            throw new Exception("Matrices must be same dimensions");
-        }
+    public float[][] add(float[][] m1, float[][] m2) {
         float[][] result = new float[m1.length][m1[0].length];
         for(int i = 0; i < m1.length; i++ ) {
             for(int j = 0; j < m1[i].length; j++) {
@@ -33,15 +27,12 @@ public class Matrix {
         return result;
     }
 
-    public static float[][] multiply(float[][] m1, float[][] m2) throws Exception {
+    public static float[][] multiply(float[][] m1, float[][] m2) {
         int m1Rows = m1.length;
         int m1Cols = m1[0].length;
         int m2Rows = m2.length;
         int m2Cols = m2[0].length;
 
-        if (m1Cols != m2Rows) {
-            throw new Exception("Matrices must have same inner dimensions");
-        }
         float[][] result = new float[m1Rows][m2Cols];
 
         for (int i = 0; i < m1Rows; i++) {
@@ -54,10 +45,31 @@ public class Matrix {
         return result;
     }
 
-    public static float dotProduct(float[] v1, float[] v2) throws Exception {
-        if(v1.length != v2.length) {
-            throw new Exception("Vectors must be of same length");
+    public static float[] subtract(float[] v1, float[] v2) {
+        float[] result = new float[v1.length];
+        for(int i = 0; i < v1.length; i++ ) {
+            result[i] = v1[i] - v2[i];
         }
+        return result;
+    }
+
+    public static float[] add(float[] v1, float[] v2) {
+        float[] result = new float[v1.length];
+        for(int i = 0; i < v1.length; i++ ) {
+            result[i] = v1[i] + v2[i];
+        }
+        return result;
+    }
+
+    public static float[] scalarMult(float[] v1, float scale) {
+        float[] result = new float[v1.length];
+        for(int i = 0; i < v1.length; i++ ) {
+            result[i] = scale * v1[i];
+        }
+        return result;
+    }
+
+    public static float dotProduct(float[] v1, float[] v2) {
         float result = 0;
         for(int i = 0; i < v1.length; i++) {
             result += v1[i] * v2[i];
