@@ -13,9 +13,9 @@ import java.util.Random;
  */
 public class QLinearAgent extends QAgent implements Agent {
 
-    private final static boolean INDICATOR_REWARDS = false;
+    private final static boolean INDICATOR_REWARDS = true;
 
-    private final static float REGULARIZATION_LAMDA = 0.001f;
+    private final static float REGULARIZATION_LAMDA = 0.01f;
     private final static float RANDOM_ACTION_EPSILON = (float) 0.2;
     private final static float STEP_SIZE = (float) 0.1;
     private final static float DISCOUNT = (float) 1.0;

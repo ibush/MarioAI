@@ -35,12 +35,11 @@ import ch.idsia.tools.EvaluationInfo;
 import ch.idsia.tools.MarioAIOptions;
 import ch.idsia.utils.statistics.StatisticalSummary;
 import cs221.QAgent;
+import cs221.QLinearAgent;
+import org.apache.commons.lang3.ArrayUtils;
 
 import java.io.*;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Vector;
+import java.util.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -79,10 +78,12 @@ public boolean runSingleEpisode(final int repetitionsOfSingleEpisode, boolean ou
 {
     PrintWriter fitnessScores = null;
     PrintWriter distance = null;
+    PrintWriter weightsStats = null;
     if(outputToFile) {
         try {
             fitnessScores = new PrintWriter("fitnessScores_" + agent.getName(), "UTF-8");
             distance = new PrintWriter("distance_" + agent.getName(), "UTF-8");
+            if(agent instanceof QLinearAgent) weightsStats = new PrintWriter("weightsStats_" + agent.getName(), "UTF-8");
         } catch (Exception e) {
             System.out.println("Could not open output files");
         }
@@ -111,7 +112,9 @@ public boolean runSingleEpisode(final int repetitionsOfSingleEpisode, boolean ou
 //               System.out.println("action = " + Arrays.toString(action));
 //            environment.setRecording(GlobalOptions.isRecording);
                 environment.performAction(action);
-                if(agent instanceof QAgent ) learnedParams = ((QAgent)agent).getLearnedParams();
+                if(agent instanceof QAgent ) {
+                    learnedParams = ((QAgent)agent).getLearnedParams();
+                }
             }
         }
         environment.closeRecorder(); //recorder initialized in environment.reset
@@ -119,12 +122,27 @@ public boolean runSingleEpisode(final int repetitionsOfSingleEpisode, boolean ou
         this.evaluationInfo = environment.getEvaluationInfo().clone();
         if(fitnessScores != null) fitnessScores.println(environment.getEvaluationInfo().computeWeightedFitness());
         if(distance!= null) distance.println(environment.getEvaluationInfo().computeDistancePassed());
+
+        if(agent instanceof QLinearAgent) {
+            double[] weights = (double[])learnedParams.get("weights");
+            List weightsList = Arrays.asList(ArrayUtils.toObject(weights));
+            weightsStats.println(Collections.min(weightsList) + "," + Collections.max(weightsList) + "," + avg(weights));
+        }
         //System.out.println(Arrays.toString((double[])learnedParams.get("weights")));
     }
 
     if(fitnessScores != null) fitnessScores.close();
     if(distance != null) distance.close();
+    if(weightsStats != null) weightsStats.close();
     return true;
+}
+
+public static double avg(double[] m) {
+    double sum = 0;
+    for (int i = 0; i < m.length; i++) {
+        sum += m[i];
+    }
+    return sum / m.length;
 }
 
 public Environment getEnvironment()
