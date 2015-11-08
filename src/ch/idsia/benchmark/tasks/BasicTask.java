@@ -37,6 +37,7 @@ import ch.idsia.utils.statistics.StatisticalSummary;
 import cs221.QAgent;
 
 import java.io.*;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
@@ -80,8 +81,8 @@ public boolean runSingleEpisode(final int repetitionsOfSingleEpisode, boolean ou
     PrintWriter distance = null;
     if(outputToFile) {
         try {
-            fitnessScores = new PrintWriter("fitnessScoresOutput", "UTF-8");
-            distance = new PrintWriter("distanceOutput", "UTF-8");
+            fitnessScores = new PrintWriter("fitnessScores_" + agent.getName(), "UTF-8");
+            distance = new PrintWriter("distance_" + agent.getName(), "UTF-8");
         } catch (Exception e) {
             System.out.println("Could not open output files");
         }
@@ -118,6 +119,7 @@ public boolean runSingleEpisode(final int repetitionsOfSingleEpisode, boolean ou
         this.evaluationInfo = environment.getEvaluationInfo().clone();
         if(fitnessScores != null) fitnessScores.println(environment.getEvaluationInfo().computeWeightedFitness());
         if(distance!= null) distance.println(environment.getEvaluationInfo().computeDistancePassed());
+        //System.out.println(Arrays.toString((double[])learnedParams.get("weights")));
     }
 
     if(fitnessScores != null) fitnessScores.close();

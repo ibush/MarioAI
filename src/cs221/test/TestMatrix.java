@@ -40,10 +40,10 @@ public class TestMatrix {
         }
 
         System.out.println("Dot Product");
-        float[] v1 = {1, 3, 4};
-        float[] v2 = {1, 2, 1};
+        double[] v1 = {1, 3, 4};
+        double[] v2 = {1, 2, 1};
         try {
-            float result = Matrix.dotProduct(v1, v2);
+            double result = Matrix.dotProduct(v1, v2);
             System.out.println(result);
         } catch (Exception e) {
             System.out.println("Matrix sizes don't work for multiplication");

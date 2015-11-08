@@ -4,6 +4,7 @@ import ch.idsia.agents.Agent;
 import ch.idsia.benchmark.mario.environments.Environment;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Random;
 
@@ -12,6 +13,9 @@ import java.util.Random;
  */
 public class QLinearAgent extends QAgent implements Agent {
 
+    private final static boolean INDICATOR_REWARDS = false;
+
+    private final static float REGULARIZATION_LAMDA = 0.001f;
     private final static float RANDOM_ACTION_EPSILON = (float) 0.2;
     private final static float STEP_SIZE = (float) 0.1;
     private final static float DISCOUNT = (float) 1.0;
@@ -28,8 +32,9 @@ public class QLinearAgent extends QAgent implements Agent {
     private float prevFitScore;
     private int[] state;
     private boolean[] action;
-    private float bestScore;
+    private double bestScore;
     private Random numGenerator = new Random();
+    private ArrayList<boolean[]> possibleActions;
 
 
     public QLinearAgent()
@@ -54,22 +59,28 @@ public class QLinearAgent extends QAgent implements Agent {
             state = succState;
             action = new boolean[Environment.numberOfKeys];
             prevFitScore = 0;
-            if(!learnedParams.containsKey(WEIGHTS_KEY)){
-                learnedParams.put(WEIGHTS_KEY, new float[(state.length + 1) * (action.length + 1)]);
-            }
-
+            bestScore = 0;
+            possibleActions = getPossibleActions(environment);
+            double[] weights = new double[state.length * possibleActions.size() + 1];
+            learnedParams.put(WEIGHTS_KEY, weights);
         }
 
         StateActionPair SAP = new StateActionPair(state, action);
         boolean[] succAction = findBestAction(environment, succState);
         float reward = currFitScore - prevFitScore;
+        if(INDICATOR_REWARDS) {
+            reward = reward > 0 ? 1.0f : -1.0f;
+        }
 
         // Update Weights
-        float[] weights = (float[])learnedParams.get(WEIGHTS_KEY);
-        float update = stepSize * (evalScore(SAP) - reward - discount * bestScore);
-        float[] chg = Matrix.scalarMult(extractFeatures(SAP), update);
-        float[] newWeights = Matrix.subtract(weights, chg);
+        double[] weights = (double[])learnedParams.get(WEIGHTS_KEY);
+        double update = stepSize * (evalScore(SAP) - reward - discount * bestScore);
+        double[] chg = Matrix.scalarMult(extractFeatures(SAP), update);
+        double[] newWeights = Matrix.subtract(weights, chg);
+        double[] regularization = Matrix.scalarMult(weights, REGULARIZATION_LAMDA);
+        newWeights = Matrix.subtract(newWeights,regularization);
         learnedParams.put(WEIGHTS_KEY, newWeights);
+        //System.out.println(Arrays.toString(newWeights));
 
 
         // Update Persistent Parameters
@@ -83,45 +94,41 @@ public class QLinearAgent extends QAgent implements Agent {
 
         // Take random action with some probability
         if(numGenerator.nextFloat() < randomJump){
-            ArrayList<boolean[]> allActions = getPossibleActions(environment);
-            int randIndex = numGenerator.nextInt(allActions.size());
-            action = allActions.get(randIndex);
+            int randIndex = numGenerator.nextInt(possibleActions.size());
+            action = possibleActions.get(randIndex);
         }
         // Otherwise return best action (calculated in integrateObservation)
         return action;
     }
 
-    private float[] extractFeatures(StateActionPair sap){
+    private double[] extractFeatures(StateActionPair sap){
         // Feature extractor
-        int[] action = boolToInt(sap.getAction());
         int[] state = sap.getState();
-        float[] weights = (float[]) learnedParams.get(WEIGHTS_KEY);
-        float[] features = new float[weights.length];
+        double[] weights = (double[]) learnedParams.get(WEIGHTS_KEY);
+        double[] features = new double[weights.length];
         int ind = 0;
-        for(int i = 0; i < action.length + 1; i ++) {
-            for (int j = 0; j < state.length + 1; j++) {
-                if (j == state.length) {
-                    // bias terms
-                    features[ind] = 1;
-                } else if (i == action.length) {
-                    // State Independent terms
-                    features[ind] = state[j];
-                } else {
-                    // State action interaction terms
-                    features[ind] = action[i] * state[j];
+        for(int i = 0; i < possibleActions.size(); i ++) {
+            for (int j = 0; j < state.length; j++) {
+                if(possibleActions.get(i) == sap.getAction()) {
+                        // State action interaction terms
+                        features[ind] = (state[j] == 0) ? 0.0 : 1.0;
+                        ind++;
                 }
-                ind++;
             }
         }
-        assert ind == features.length;
+        // Bias term
+        features[ind] = 1;
+        assert ind == features.length - 1;
         return(features);
     }
 
     //TODO: extractFeatures once in integrateObservation and store rather than doing it twice per round?
-    private float evalScore(StateActionPair sap){
-        float[] features = extractFeatures(sap);
-        float[] weights = (float[]) learnedParams.get(WEIGHTS_KEY);
-        float score = Matrix.dotProduct(weights, features);
+    private double evalScore(StateActionPair sap){
+        double[] features = extractFeatures(sap);
+        double[] weights = (double[]) learnedParams.get(WEIGHTS_KEY);
+        double score = Matrix.dotProduct(weights, features);
+
+        if(score == Double.POSITIVE_INFINITY) System.out.println("ERROR");
         return(score);
     }
 
@@ -129,7 +136,7 @@ public class QLinearAgent extends QAgent implements Agent {
         ArrayList<boolean[]> allActions = getPossibleActions(env);
 
         // Calculate score for all possible next actions
-        float[] qscores = new float[allActions.size()];
+        double[] qscores = new double[allActions.size()];
         for (int i = 0; i < allActions.size(); i++) {
             boolean[] action = allActions.get(i);
             StateActionPair sap = new StateActionPair(state, action);
@@ -146,6 +153,7 @@ public class QLinearAgent extends QAgent implements Agent {
                 bestAction = allActions.get(i);
             }
         }
+        //System.out.println(bestScore);
         return(bestAction);
     }
 
