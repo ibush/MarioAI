@@ -103,8 +103,9 @@ public class QLearningAgent extends QAgent implements Agent{
         }
 
         // Find ArgMax over all actions using calculated scores
-        boolean[] bestAction = allActions.get(0);
-        float bestScore = qscores[0];
+        int ind = numGenerator.nextInt(allActions.size());
+        boolean[] bestAction = allActions.get(ind);
+        float bestScore = qscores[ind];
         for(int i = 1; i < allActions.size(); i++){
             if(qscores[i] > bestScore){
                 bestScore = qscores[i];

@@ -153,7 +153,7 @@ public void doEpisodes(int amount, boolean verbose, final int repetitionsOfSingl
     if(agent instanceof QAgent ) {
         try{
             //read params from file
-            File file = new File("params");
+            File file = new File("params_" + agent.getName());
             ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file));
             learnedParams = (HashMap)ois.readObject();
             ois.close();
@@ -183,7 +183,7 @@ public void doEpisodes(int amount, boolean verbose, final int repetitionsOfSingl
     if (agent instanceof QAgent) {
     //Save params to file
         try {
-            ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("params"));
+            ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("params_" + agent.getName()));
             out.writeObject(learnedParams);
             out.close();
         } catch (IOException e) {

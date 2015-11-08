@@ -10,7 +10,8 @@ java -cp .:../lib/* ch.idsia.scenarios.Main -ag ch.idsia.agents.controllers.Forw
 Algorithms to Implement - All Q-Learning
 	Just state vector
 	Linear Approximation
-	Hand engineered features
+	Hand engineered features (action combos?)
 	Neural Network
 	Polynomial Features
 	Intermediate Rewards
+        Tweak parameters (step size, epsilon, etc.)

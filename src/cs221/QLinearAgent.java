@@ -15,6 +15,7 @@ public class QLinearAgent extends QAgent implements Agent {
     private final static float RANDOM_ACTION_EPSILON = (float) 0.2;
     private final static float STEP_SIZE = (float) 0.1;
     private final static float DISCOUNT = (float) 1.0;
+    private final static String WEIGHTS_KEY = "weights";
 
     private final static int Z_LEVEL_SCENE = 2;
     private final static int Z_LEVEL_ENEMIES = 2;
@@ -29,7 +30,6 @@ public class QLinearAgent extends QAgent implements Agent {
     private boolean[] action;
     private float bestScore;
     private Random numGenerator = new Random();
-    private float[] weights;
 
 
     public QLinearAgent()
@@ -54,26 +54,22 @@ public class QLinearAgent extends QAgent implements Agent {
             state = succState;
             action = new boolean[Environment.numberOfKeys];
             prevFitScore = 0;
-            if(!learnedParams.containsKey("weights")){
-                learnedParams.put("weights", new float[(state.length + 1) * (action.length + 1)]);
+            if(!learnedParams.containsKey(WEIGHTS_KEY)){
+                learnedParams.put(WEIGHTS_KEY, new float[(state.length + 1) * (action.length + 1)]);
             }
 
         }
 
-        // Update Learning Parameters
         StateActionPair SAP = new StateActionPair(state, action);
         boolean[] succAction = findBestAction(environment, succState);
-        StateActionPair succSAP = new StateActionPair(succState, succAction);
         float reward = currFitScore - prevFitScore;
 
-        Float newScore = (1 - stepSize) * evalScore(SAP) + stepSize * (reward + discount * evalScore(succSAP));
-
-        // Need to modify to SGD update
-        float[] weights = (float[])learnedParams.get("weights");
-        float margin = stepSize * (evalScore(SAP) - reward - discount * bestScore);
-        float[] chg = Matrix.scalarMult(extractFeatures(SAP), margin);
+        // Update Weights
+        float[] weights = (float[])learnedParams.get(WEIGHTS_KEY);
+        float update = stepSize * (evalScore(SAP) - reward - discount * bestScore);
+        float[] chg = Matrix.scalarMult(extractFeatures(SAP), update);
         float[] newWeights = Matrix.subtract(weights, chg);
-        learnedParams.put("weights", newWeights);
+        learnedParams.put(WEIGHTS_KEY, newWeights);
 
 
         // Update Persistent Parameters
@@ -99,7 +95,7 @@ public class QLinearAgent extends QAgent implements Agent {
         // Feature extractor
         int[] action = boolToInt(sap.getAction());
         int[] state = sap.getState();
-        float[] weights = (float[]) learnedParams.get("weights");
+        float[] weights = (float[]) learnedParams.get(WEIGHTS_KEY);
         float[] features = new float[weights.length];
         int ind = 0;
         for(int i = 0; i < action.length + 1; i ++) {
@@ -121,15 +117,11 @@ public class QLinearAgent extends QAgent implements Agent {
         return(features);
     }
 
+    //TODO: extractFeatures once in integrateObservation and store rather than doing it twice per round?
     private float evalScore(StateActionPair sap){
         float[] features = extractFeatures(sap);
-        float[] weights = (float[]) learnedParams.get("weights");
-        float score = 0;
-        try {
-            score = Matrix.dotProduct(weights, features);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        float[] weights = (float[]) learnedParams.get(WEIGHTS_KEY);
+        float score = Matrix.dotProduct(weights, features);
         return(score);
     }
 
