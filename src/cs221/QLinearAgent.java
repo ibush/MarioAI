@@ -13,12 +13,13 @@ import java.util.Random;
  */
 public class QLinearAgent extends QAgent implements Agent {
 
+    private final static boolean VERBOSE = false;
     private final static boolean INDICATOR_REWARDS = true;
 
     private final static float REGULARIZATION_LAMDA = 0.01f;
     private final static float RANDOM_ACTION_EPSILON = (float) 0.2;
-    private final static float STEP_SIZE = (float) 0.1;
-    private final static float DISCOUNT = (float) 1.0;
+    private final static float STEP_SIZE = (float) 0.01;
+    private final static float DISCOUNT = (float) 0.8;
     private final static String WEIGHTS_KEY = "weights";
 
     private final static int Z_LEVEL_SCENE = 2;
@@ -64,8 +65,8 @@ public class QLinearAgent extends QAgent implements Agent {
             prevFitScore = 0;
             bestScore = 0;
             possibleActions = getPossibleActions(environment);
-            double[] weights = new double[state.length * possibleActions.size() + 1];
-            learnedParams.put(WEIGHTS_KEY, weights);
+            //double[] weights = new double[state.length * possibleActions.size() + 1];
+            //learnedParams.put(WEIGHTS_KEY, weights);
         }
 
         StateActionPair SAP = new StateActionPair(state, action);
@@ -77,6 +78,7 @@ public class QLinearAgent extends QAgent implements Agent {
 
         // Update Weights
         double[] weights = (double[])learnedParams.get(WEIGHTS_KEY);
+
         double update = stepSize * (evalScore(SAP) - reward - discount * bestScore);
         double[] chg = Matrix.scalarMult(extractFeatures(SAP), update);
         double[] newWeights = Matrix.subtract(weights, chg);
@@ -84,8 +86,27 @@ public class QLinearAgent extends QAgent implements Agent {
             double[] regularization = Matrix.scalarMult(weights, REGULARIZATION_LAMDA);
             newWeights = Matrix.subtract(newWeights,regularization);
         }
+
+
+        if(VERBOSE) {
+            StringBuilder sb = new StringBuilder();
+            sb.append(" Q Pred : ").append(evalScore(SAP));
+            sb.append(" reward : ").append(reward);
+            sb.append(" Vopt : ").append(bestScore);
+            sb.append(" DVopt : ").append(discount * bestScore);
+            sb.append(" Update : ").append(update);
+            double temp = 0;
+            for (int i = 0; i < weights.length; i++) {
+                temp = temp + weights[i];
+            }
+            sb.append(" SumWeight : ").append(temp);
+            System.out.println(sb.toString());
+        }
+
+
         learnedParams.put(WEIGHTS_KEY, newWeights);
         //System.out.println(Arrays.toString(newWeights));
+
 
 
         // Update Persistent Parameters
