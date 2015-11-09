@@ -65,8 +65,11 @@ public class QLinearAgent extends QAgent implements Agent {
             prevFitScore = 0;
             bestScore = 0;
             possibleActions = getPossibleActions(environment);
-            //double[] weights = new double[state.length * possibleActions.size() + 1];
-            //learnedParams.put(WEIGHTS_KEY, weights);
+
+            if(learnedParams.get(WEIGHTS_KEY) == null) {
+                double[] weights = new double[state.length * possibleActions.size() + 1];
+                learnedParams.put(WEIGHTS_KEY, weights);
+            }
         }
 
         StateActionPair SAP = new StateActionPair(state, action);
