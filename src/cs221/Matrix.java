@@ -45,32 +45,32 @@ public class Matrix {
         return result;
     }
 
-    public static float[] subtract(float[] v1, float[] v2) {
-        float[] result = new float[v1.length];
+    public static double[] subtract(double[] v1, double[] v2) {
+        double[] result = new double[v1.length];
         for(int i = 0; i < v1.length; i++ ) {
             result[i] = v1[i] - v2[i];
         }
         return result;
     }
 
-    public static float[] add(float[] v1, float[] v2) {
-        float[] result = new float[v1.length];
+    public static double[] add(double[] v1, double[] v2) {
+        double[] result = new double[v1.length];
         for(int i = 0; i < v1.length; i++ ) {
             result[i] = v1[i] + v2[i];
         }
         return result;
     }
 
-    public static float[] scalarMult(float[] v1, float scale) {
-        float[] result = new float[v1.length];
+    public static double[] scalarMult(double[] v1, double scale) {
+        double[] result = new double[v1.length];
         for(int i = 0; i < v1.length; i++ ) {
             result[i] = scale * v1[i];
         }
         return result;
     }
 
-    public static float dotProduct(float[] v1, float[] v2) {
-        float result = 0;
+    public static double dotProduct(double[] v1, double[] v2) {
+        double result = 0;
         for(int i = 0; i < v1.length; i++) {
             result += v1[i] * v2[i];
         }
