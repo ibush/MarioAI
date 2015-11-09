@@ -1,0 +1,68 @@
+\documentclass[12pt]{article}
+
+\usepackage{amsmath, graphicx}
+\usepackage[margin=1in]{geometry}
+
+\begin{document}
+\nocite{*}
+
+\title{Progress Report - Super Mario Bros with Deep Reinforcement Learning}
+
+\author{
+  Matthew Chen
+  \and
+  Isabel Bush
+}
+\date{}
+\maketitle
+
+
+\section{Abstract}
+
+For this project we will be implementing various reinforcement learning algorithms to create learning agents to effectively play a variant of the classic Super Mario Bros game. The game is challenging from an AI standpoint as the environment is stochastic with randomly generated levels, and the state space is large. To address these challenges we will use Q-learning with various Q-function approximations ranging from simplistic feature extractors to deep learning implementations.
+
+
+\section{Models}
+
+We are running several variants of the Q learning algorithm with differing function approximations. Our state is defined as a vector of all observed attributes of the game. This can be divided into two components. In the first component are meta data features which include distance to the finish, time left, mario state. These features describe the progression of the game. Then we have a grid of sized size which is provided by the simulator at each time step. The grid can be though of as a low detail/resolution view of the game. The entire grid is centered around mario and each cell corresponds to objects in that relative position to mario (mushrooms, monsters, empty, etc).
+
+Then we have the acitons which correspond to the original buttons which can be pressed for the player to interact with the game. This is a set of six buttons which can be toggled on and off during a give timestep. Since combinations of buttons are also possible we have defined our set of possible actions as all binary combinations of the six buttons leading to $2^6 = 64$ distinct actions.
+
+\subsection{Identity function}
+
+\subsection{Linear Approximation}
+
+\subsection{Neural Network}
+
+We will try two neural network representations for approximating the Q function. In the first representation we will use several fully connected layers, with either logistic units or rectifier units. This network will take as input the state vector which we have described above and output a q score approximation.
+
+In our second implementation we will incorporate spacial information by implementing convulutional layers in our neural network as we done in \cite{mnih}. The first layer will be the state grid representation where each box in the grid shows indicator values for items and enemies. The grid is centered around mario. The architecture will mirror that of \cite{mnih} with two convulutional layers followed by fully connected layers. The state information which has no spacial dimension (mario status, distance from goal, etc) will be brought in as additional features in the fully connected layer.
+
+Additonally we will use playback memory as defined in \cite{mnih} where we store the previous D observations from the game. We then sample from these operations when performing a single update to perform mini-batch gradient descent. This method should help mitigate the problem of correlated features from time windows and the convergence of the weights.
+
+\section{Initial Results}
+
+
+
+\section{Future Work}
+
+The following are next steps in our project:
+
+\begin{enumerate}
+\item Implement Neural network Agent
+\item Record training statistics for all agents
+\item Compare performance and run times of all agents
+\item Benchmark our results against competition results
+\end{enumerate}
+
+\begin{thebibliography}{1}
+
+\bibitem{karakovskiy} S. Karakovskiy, J. Togelius {\em The Mario AI Benchmark and Competitions} 2012.
+
+\bibitem{tsay}  J. Tsay, C. Chen, J. Hsu {\em Evolving Intelligent Mario Controller by Reinforcement Learning} 2011.
+
+\bibitem{mnih} V. Mnih, K. Kavukcuoglu, D. Silver, A. Graves, I. Antonoglou, D. Wierstra, M. Riedmiller {\em Playing Atari with Deep Reinforcement Learning} 2013.
+
+\end{thebibliography}
+
+\end{document}
