@@ -74,7 +74,7 @@ public boolean[] getAction()
     return ret;
 }
 */
-//Random Agent used as baseline (doesn't move to left)
+//Random Agent used as baseline
     public boolean[] getAction()
     {
         boolean[] ret = new boolean[Environment.numberOfKeys];
@@ -83,7 +83,7 @@ public boolean[] getAction()
         {
             ret[i] = R.nextBoolean();
         }
-        ret[0] = false;
+        //ret[0] = false; //Doesn't allow to move left
         return ret;
     }
 }
