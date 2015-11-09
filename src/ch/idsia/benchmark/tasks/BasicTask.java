@@ -115,19 +115,19 @@ public boolean runSingleEpisode(final int repetitionsOfSingleEpisode, boolean ou
                 if(agent instanceof QAgent ) {
                     learnedParams = ((QAgent)agent).getLearnedParams();
                 }
+                if(agent instanceof QLinearAgent) {
+                    double[] weights = (double[])learnedParams.get("weights");
+                    List weightsList = Arrays.asList(ArrayUtils.toObject(weights));
+                    weightsStats.println(Collections.min(weightsList) + "," + Collections.max(weightsList) + "," + avg(weights));
+                }
             }
         }
         environment.closeRecorder(); //recorder initialized in environment.reset
         environment.getEvaluationInfo().setTaskName(name);
         this.evaluationInfo = environment.getEvaluationInfo().clone();
+
         if(fitnessScores != null) fitnessScores.println(environment.getEvaluationInfo().computeWeightedFitness());
         if(distance!= null) distance.println(environment.getEvaluationInfo().computeDistancePassed());
-
-        if(agent instanceof QLinearAgent) {
-            double[] weights = (double[])learnedParams.get("weights");
-            List weightsList = Arrays.asList(ArrayUtils.toObject(weights));
-            weightsStats.println(Collections.min(weightsList) + "," + Collections.max(weightsList) + "," + avg(weights));
-        }
         //System.out.println(Arrays.toString((double[])learnedParams.get("weights")));
     }
 
