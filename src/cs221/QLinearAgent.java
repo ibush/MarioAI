@@ -49,11 +49,14 @@ public class QLinearAgent extends QAgent implements Agent {
     }
 
     public void integrateObservation(Environment environment) {
-
         // Get observed state vector
-        int[] succState =  environment.getSerializedFullObservationZZ(Z_LEVEL_SCENE, Z_LEVEL_ENEMIES);
+        int[] succState = environment.getSerializedFullObservationZZ(Z_LEVEL_SCENE, Z_LEVEL_ENEMIES);
         float currFitScore = (float) environment.getEvaluationInfo().computeBasicFitness();
 
+        integrateObservation(succState, currFitScore);
+    }
+
+    public void integrateObservation(int[] succState, float currFitScore) {
         // Initial values
         if(state == null){
             state = succState;
@@ -69,7 +72,7 @@ public class QLinearAgent extends QAgent implements Agent {
         boolean[] succAction = findBestAction(environment, succState);
         float reward = currFitScore - prevFitScore;
         if(INDICATOR_REWARDS) {
-            reward = reward > 0 ? 1.0f : -1.0f;
+            if(reward != 0) reward = reward > 0 ? 1.0f : -1.0f;
         }
 
         // Update Weights
@@ -77,8 +80,10 @@ public class QLinearAgent extends QAgent implements Agent {
         double update = stepSize * (evalScore(SAP) - reward - discount * bestScore);
         double[] chg = Matrix.scalarMult(extractFeatures(SAP), update);
         double[] newWeights = Matrix.subtract(weights, chg);
-        double[] regularization = Matrix.scalarMult(weights, REGULARIZATION_LAMDA);
-        newWeights = Matrix.subtract(newWeights,regularization);
+        if(REGULARIZATION_LAMDA != 0) {
+            double[] regularization = Matrix.scalarMult(weights, REGULARIZATION_LAMDA);
+            newWeights = Matrix.subtract(newWeights,regularization);
+        }
         learnedParams.put(WEIGHTS_KEY, newWeights);
         //System.out.println(Arrays.toString(newWeights));
 
@@ -109,16 +114,15 @@ public class QLinearAgent extends QAgent implements Agent {
         int ind = 0;
         for(int i = 0; i < possibleActions.size(); i ++) {
             for (int j = 0; j < state.length; j++) {
-                if(possibleActions.get(i) == sap.getAction()) {
-                        // State action interaction terms
-                        features[ind] = (state[j] == 0) ? 0.0 : 1.0;
-                        ind++;
+                if(Arrays.equals(possibleActions.get(i), sap.getAction())) {
+                    // State action interaction terms
+                    features[ind] = (state[j] == 0) ? 0.0 : 1.0;
                 }
+                ind++;
             }
         }
         // Bias term
         features[ind] = 1;
-        assert ind == features.length - 1;
         return(features);
     }
 
@@ -128,7 +132,8 @@ public class QLinearAgent extends QAgent implements Agent {
         double[] weights = (double[]) learnedParams.get(WEIGHTS_KEY);
         double score = Matrix.dotProduct(weights, features);
 
-        if(score == Double.POSITIVE_INFINITY) System.out.println("ERROR");
+        //System.out.println("score: " + score);
+        if(score == Double.POSITIVE_INFINITY || score == Double.NEGATIVE_INFINITY) System.out.println("ERROR: Score overflow");
         return(score);
     }
 
