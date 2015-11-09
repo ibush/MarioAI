@@ -77,4 +77,23 @@ public class Matrix {
         return result;
     }
 
+    // Extended methods for neural network computations
+    // Returns a (m x n) matrix of random numbers in [0,1]
+    public static double[][] rand(int m, int n){
+        System.out.println("NOT YET IMPLEMENTED");
+        return new double[1][1];
+    }
+
+    // return a (m x n) matrix of ones
+    public static double[][] ones(int m, int n){
+        System.out.println("NOT YET IMPLEMENTED");
+        return new double[1][1];
+    }
+
+    // return a (m x n) matrix of zeros
+    public static double[][] zeros(int m, int n){
+        System.out.println("NOT YET IMPLEMENTED");
+        return new double[1][1];
+    }
+
 }

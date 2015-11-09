@@ -1,50 +1,43 @@
 package cs221;
 
-import ch.idsia.agents.Agent;
 import ch.idsia.benchmark.mario.environments.Environment;
+import cs221.neuralnetwork.LayerSpec;
+import cs221.neuralnetwork.NeuralNet;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Random;
+import java.util.List;
 
 /**
- * Created by matt on 11/1/15.
+ * Created by matt on 11/8/15.
  */
-public class QLinearAgent extends QAgent implements Agent {
+public class NNAgent extends QAgent implements QLearningAgent{
 
-    private final static boolean VERBOSE = false;
-    private final static boolean INDICATOR_REWARDS = true;
+    private NeuralNet net;
 
-    private final static float REGULARIZATION_LAMDA = 0.01f;
-    private final static float RANDOM_ACTION_EPSILON = (float) 0.2;
-    private final static float STEP_SIZE = (float) 0.01;
-    private final static float DISCOUNT = (float) 0.95;
-    private final static String WEIGHTS_KEY = "weights";
-
-    private final static int Z_LEVEL_SCENE = 2;
-    private final static int Z_LEVEL_ENEMIES = 2;
-
-    private float stepSize;
-    private float discount;
-    //private HashMap<int[], Float> mapping = new HashMap<int[], Float>();
-    private float randomJump;
-    private Environment environment;
-    private float prevFitScore;
-    private int[] state;
-    private boolean[] action;
-    private double bestScore;
-    private Random numGenerator = new Random();
-    private ArrayList<boolean[]> possibleActions;
-
-
-    public QLinearAgent()
-    {
+    public NNAgent(){
         super("QLinearAgent");
         randomJump = RANDOM_ACTION_EPSILON;
         stepSize = STEP_SIZE;
         discount = DISCOUNT;
         learnedParams = new HashMap<String,Float[]>();
+
+        // Network hyperparameters
+        HashMap<String,Double> hparams = new HashMap<String, Double>();
+        List<LayerSpec> layers= new List<LayerSpec>();
+
+        hparams.put("lr", 0.01);
+        hparams.put("reg", 0.005);
+        hparams.put("numOut", 1.0);
+
+        LayerSpec l1 = new LayerSpec("fullyConnected");
+        LayerSpec l2 = new LayerSpec("fullyConnected");
+
+        layers.add(l1);
+        layers.add(l2);
+
+        net = new NeuralNet(layers, hparams);
 
         reset();
     }
@@ -183,11 +176,6 @@ public class QLinearAgent extends QAgent implements Agent {
         return(bestAction);
     }
 
-    private int[] boolToInt(boolean[] arr){
-        int[] result = new int[arr.length];
-        for(int i=0;i<arr.length;i++){
-            result[i] = arr[i] ? 1 : 0;
-        }
-        return(result);
-    }
+
+
 }
