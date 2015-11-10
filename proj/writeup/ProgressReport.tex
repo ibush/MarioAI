@@ -54,7 +54,14 @@ Additionally, we will use playback memory as defined in \cite{mnih}. We will sto
 
 \section{Initial Results}
 
-We implemented initial versions of the Identity and Linear Approximation Agents. Preliminary results show that both models are able to learn some of the game's goals and outperform the baseline random agent.
+\begin{figure}
+\includegraphics[scale=0.5]{imgs/dist_bar.pdf}
+\includegraphics[scale=0.5]{imgs/dist_line.pdf}
+\caption{Learning statistics showing comparison between different agents by mean progress before end of game}
+\label{agent_comp}
+\end{figure}
+
+We implemented initial versions of the Identity and Linear Approximation Agents. Preliminary results show that both models are able to learn some of the game's goals and outperform the baseline random agent by a large margin as shown in Figure \ref{agent_comp}.
 
 The Identity Agent was able to run for about 200 trials before running out of memory (where each trial is a full game and consists of about 1000 time-steps). At the start of learning, Mario jumps around aimlessly performing random actions. By the end of the 200 trials, the agent has learned to move forward from some states and thus makes progress. However, since there is no generalization, the agent still performs random actions from some states and the game usually ends due to timeout. 
 
