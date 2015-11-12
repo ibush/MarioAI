@@ -2,6 +2,7 @@
 
 \usepackage{amsmath, graphicx}
 \usepackage[margin=1in]{geometry}
+\usepackage[font=footnotesize]{caption}
 
 \begin{document}
 \nocite{*}
@@ -24,9 +25,16 @@ For this project we are implementing various reinforcement learning algorithms t
 
 \section{Models}
 
-We are running several variants of the Q learning algorithm with differing function approximations. 
+\begin{figure}
+\centering
+\includegraphics[scale=0.5]{imgs/mario_grid}
+\caption{A component of the game state is a small grid centered around Mario indicating objects nearby. In the actual simulation, the grid is 22 x 22 cells, where each cell is the size of a single block \cite{karakovskiy}.}
+\label{mario_grid}
+\end{figure}
 
-Our state is defined as a vector of all observed attributes of the game. This can be divided into two components. In the first component are meta data features which include distance to the finish, time left, and Mario state. These features describe the progression of the game. The second component is a 22 x 22 grid which is provided by the simulator at each time step. The grid can be thought of as a low detail/resolution view of the game. The entire grid is centered around Mario and each cell corresponds to objects in that relative position to Mario (blocks, mushrooms, monsters, gap, etc).
+We are running several variants of the Q learning algorithm with differing function approximations. All variants use an epsilon-greedy policy to choose an action at each state.
+
+Our state is defined as a vector of all observed attributes of the game. This can be divided into two components. In the first component are meta data features which include distance to the finish, time left, and Mario state. These features describe the progression of the game. The second component is a 22 x 22 grid which is provided by the simulator at each time step, as shown in Figure \ref{mario_grid}. The grid can be thought of as a low detail/resolution view of the game. The entire grid is centered around Mario and each cell corresponds to objects in that relative position to Mario (blocks, mushrooms, monsters, gap, etc).
 
 Actions correspond to combinations of the original buttons which could be pressed for the player to interact with the game. The game uses a set of six buttons which can be toggled on and off during a given time-step to make Mario move forward, jump, throw a fireball, etc. Since combinations of buttons are possible, we have defined our set of possible actions as all binary combinations of the six buttons leading to $2^6 = 64$ distinct actions.
 
@@ -61,16 +69,13 @@ Additionally, we will use playback memory as defined in \cite{mnih}. We will sto
 \label{agent_comp}
 \end{figure}
 
-We implemented initial versions of the Identity and Linear Approximation Agents. Preliminary results show that both models are able to learn some of the game's goals and outperform the baseline random agent by a large margin as shown in Figure \ref{agent_comp}.
+We implemented initial versions of the Identity and Linear Approximation Agents, as well as a baseline random agent that chooses a random action at each step. Preliminary results show that both models are able to learn some of the game's goals and outperform the random agent by a large margin as shown in Figure \ref{agent_comp}.
 
 The Identity Agent was able to run for about 200 trials before running out of memory (where each trial is a full game and consists of about 1000 time-steps). At the start of learning, Mario jumps around aimlessly performing random actions. By the end of the 200 trials, the agent has learned to move forward from some states and thus makes progress. However, since there is no generalization, the agent still performs random actions from some states and the game usually ends due to timeout. 
 
-A graph of the distance travelled and fitness scores over the trials for the Identity Agent can be seen in Figure X. While there is much variability, the trend is positive. Over the last 50 trials, the Identity Agent travelled an average distance of 710 with an average fitness score of 1,561. This is significantly better than our baseline random agent, which travels an average distance of 127 with an average fitness score of 257.
+The distance travelled and fitness scores over the trials for the agents can be seen in the Learning Convergence graph in Figure \ref{agent_comp}. While there is much variability, the trend is positive for the Identity Agent. Over the last 50 trials, the Identity Agent travelled an average distance of 710 with an average fitness score of 1,561. This is significantly better than the baseline random agent, which travels an average distance of 127 with an average fitness score of 257.
 
-Due to the generalization, the Linear Agent learns much faster than the Identity Agent. The rate is faster despite a much lower learning rate (step-size), which was needed to keep the weights from diverging. The Linear Agent is able to progress farther than the Identity Agent (generalizing the desire to move forward to many different states) and thus usually completes the level or dies from a monster rather than hitting the timeout. 
-
-%Describe linear agent graphs we choose to include %
-The Linear Agent travels an average distance of 2,360 with an average fitness score of 5,140, outperforming both the random agent and Identity Agent.
+Due to generalization of state features, the Linear Agent learns much faster than the Identity Agent, as can be seen by the higher distance travelled even during the first few training epochs. The rate is faster despite a much lower learning rate (step-size), which was needed to keep the weights from diverging. The Linear Agent is able to progress farther on average than the Identity Agent (generalizing the desire to move forward to many different states) and thus usually completes the level or dies from a monster rather than hitting the timeout. The Linear Agent travels an average distance of 2,360 with an average fitness score of 5,140, far outperforming both the random agent and Identity Agent.
 
 \section{Future Work}
 
@@ -86,8 +91,6 @@ The following are next steps in our project:
 \begin{thebibliography}{1}
 
 \bibitem{karakovskiy} S. Karakovskiy, J. Togelius {\em The Mario AI Benchmark and Competitions} 2012.
-
-\bibitem{tsay}  J. Tsay, C. Chen, J. Hsu {\em Evolving Intelligent Mario Controller by Reinforcement Learning} 2011.
 
 \bibitem{mnih} V. Mnih, K. Kavukcuoglu, D. Silver, A. Graves, I. Antonoglou, D. Wierstra, M. Riedmiller {\em Playing Atari with Deep Reinforcement Learning} 2013.
 
