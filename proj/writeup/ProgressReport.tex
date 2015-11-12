@@ -54,9 +54,7 @@ The feature vector consists of indicator values for each element of the state ve
 
 \subsection{Neural Network}
 
-We will try two neural network representations for approximating the Q function. In the first representation we will use several fully-connected layers, with either logistic units or rectifier units. This network will take as input the state vector described above and output a Q score approximation.
-
-In our second implementation we will incorporate spatial information by implementing convolutional layers in our neural network as was done in \cite{mnih}. The first layer will be the state grid representation where each box in the grid shows indicator values for items and enemies. The grid is centered around Mario. The architecture will mirror that of \cite{mnih} with two convolutional layers followed by fully connected layers. The state information which has no spatial dimension (Mario status, distance from goal, etc) will be brought in as additional features in the fully connected layer.
+We will try two neural network representations for approximating the Q function. In this representation we will use several fully-connected layers, with either logistic units or rectifier units. This network will take as input the state vector described above and output a Q score approximation.
 
 Additionally, we will use playback memory as defined in \cite{mnih}. We will store the previous N observations from the game. We then sample from these observations during a single update to perform mini-batch gradient descent. This method should help mitigate the problem of correlated features from time windows and aid in the convergence of the weights.
 
@@ -71,7 +69,7 @@ Additionally, we will use playback memory as defined in \cite{mnih}. We will sto
 
 We implemented initial versions of the Identity and Linear Approximation Agents, as well as a baseline random agent that chooses a random action at each step. Preliminary results show that both models are able to learn some of the game's goals and outperform the random agent by a large margin as shown in Figure \ref{agent_comp}.
 
-The Identity Agent was able to run for about 200 trials before running out of memory (where each trial is a full game and consists of about 1000 time-steps). At the start of learning, Mario jumps around aimlessly performing random actions. By the end of the 200 trials, the agent has learned to move forward from some states and thus makes progress. However, since there is no generalization, the agent still performs random actions from some states and the game usually ends due to timeout. 
+The Identity Agent was able to run for about 200 trials before running out of memory (where each trial is a full game and consists of about 1000 time-steps). At the start of learning, Mario jumps around aimlessly performing random actions. By the end of the 200 trials, the agent has learned to move forward from some states and thus makes progress. However, since there is no generalization, the agent still performs random actions from some states and the game usually ends due to time-out. 
 
 The distance travelled and fitness scores over the trials for the agents can be seen in the Learning Convergence graph in Figure \ref{agent_comp}. While there is much variability, the trend is positive for the Identity Agent. Over the last 50 trials, the Identity Agent travelled an average distance of 710 with an average fitness score of 1,561. This is significantly better than the baseline random agent, which travels an average distance of 127 with an average fitness score of 257.
 

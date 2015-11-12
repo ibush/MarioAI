@@ -14,7 +14,7 @@ out_dir  <- paste0(proj_dir, 'writeup/imgs/')
 epoch_size <- 100
 
 qlinear_dir <- paste0(data_dir, 'QLinearAgent_2000_runs/')
-random_dir  <- paste0(data_dir, 'Random_200_runs/')
+random_dir  <- paste0(data_dir, 'Random_2000_runs/')
 qlearning_dir <- paste0(data_dir, 'QLearningAgent_200_runs/')
 
 import_data <- function(dir_path, measure, agent){
