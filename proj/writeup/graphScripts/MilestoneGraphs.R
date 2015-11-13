@@ -11,7 +11,7 @@ data_dir <- paste0(proj_dir, 'data/')
 out_dir  <- paste0(proj_dir, 'writeup/imgs/')
 
 # hyperparameters
-epoch_size <- 100
+epoch_size <- 10
 
 qlinear_dir <- paste0(data_dir, 'QLinearAgent_2000_runs/')
 random_dir  <- paste0(data_dir, 'Random_2000_runs/')
@@ -32,9 +32,11 @@ measure <- 'distance'
 qlinear_agent <- import_data(qlinear_dir, measure,'QLinearAgent')
 random_agent <- import_data(random_dir, measure,'RandomAgent')
 qlearning_agent <- import_data(qlearning_dir, measure,'QLearningAgent')
+qlearning_agent$agent <- 'IdentityAgent'
 
 data <- rbind(qlinear_agent, random_agent, qlearning_agent)
 data$epoch <- floor(data$iter / epoch_size)
+data <- subset(data, epoch <= 20)
 
 # Line Graph
 line_data <- summarise(group_by(data, epoch, agent), mdist=mean(distance))
