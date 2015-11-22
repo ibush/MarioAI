@@ -14,6 +14,12 @@ public class LayerSpec {
         this.type = type;
         args = new HashMap<String, Double>();
     }
+    public LayerSpec(String type, int inputSize, int outputSize){
+        this.type = type;
+        args = new HashMap<String, Double>();
+        addArg(Layer.INPUT_SIZE, new Double(inputSize));
+        addArg(Layer.OUTPUT_SIZE, new Double(outputSize));
+    }
 
     public void addArg(String arg, Double val){
         args.put(arg,val);

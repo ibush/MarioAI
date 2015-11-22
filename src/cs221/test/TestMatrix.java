@@ -10,11 +10,11 @@ public class TestMatrix {
     public static void main(String[] args)
     {
         System.out.println("Subtraction");
-        float[][] m1 = {{1,2}, {2,3}, {4,0}};
-        float[][] m2 = {{0,1}, {0,1}, {0,1}};
+        double[][] m1 = {{1,2}, {2,3}, {4,0}};
+        double[][] m2 = {{0,1}, {0,1}, {0,1}};
         try {
 
-            float[][] result = Matrix.subtract(m1, m2);
+            double[][] result = Matrix.subtract(m1, m2);
             for(int i = 0; i < result.length; i++ ) {
                 for (int j = 0; j < result[i].length; j++) {
                     System.out.println(result[i][j]);
@@ -25,11 +25,11 @@ public class TestMatrix {
         }
 
         System.out.println("Multiplication");
-        float[][] m1Mult = {{1,2}, {2,3}, {4,0}};
-        float[][] m2Mult = {{1}, {2}};
+        double[][] m1Mult = {{1,2}, {2,3}, {4,0}};
+        double[][] m2Mult = {{1}, {2}};
         try {
 
-            float[][] result = Matrix.multiply(m1Mult, m2Mult);
+            double[][] result = Matrix.multiply(m1Mult, m2Mult);
             for(int i = 0; i < result.length; i++ ) {
                 for (int j = 0; j < result[i].length; j++) {
                     System.out.println(result[i][j]);

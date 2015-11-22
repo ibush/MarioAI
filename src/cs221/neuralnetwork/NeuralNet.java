@@ -2,6 +2,7 @@ package cs221.neuralnetwork;
 
 import cs221.Matrix;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -13,15 +14,33 @@ public class NeuralNet {
     private double lr;
     private double reg;
 
-    public NeuralNet(List<LayerSpec> layers, HashMap<String,Double> hparams){
+    private ArrayList<Layer> layers;
+    private HashMap<String, Double> hparams;
 
+    public NeuralNet(List<LayerSpec> layerSpecs, HashMap<String,Double> hparams){
+        layers = new ArrayList<Layer>();
+        for(LayerSpec layerSpec : layerSpecs) {
+            layers.add(LayerFactory.genLayer(layerSpec.getType(), hparams,
+                    (int)Math.floor(layerSpec.getArg(Layer.INPUT_SIZE)),
+                    (int)Math.floor(layerSpec.getArg(Layer.OUTPUT_SIZE))));
+        }
+        this.hparams = hparams;
     }
 
-    public Double forward(Matrix input){
-        return(0.0);
+    // Returns the score of the input feature matrix
+    public double forward(double[][] features){
+        double[][] result = features;
+        for(Layer layer : layers) {
+            result = layer.forward(result);
+        }
+        return result[0][0];
     }
 
-    public void backpropagation(Matrix input, double score){
-
+    // Integrates that the previous forward call produced the given actual reward
+    public void backprop(double error){
+        double[][] doutput = {{error}}; //TODO: Rethink this
+        for(int i = layers.size() - 1; i >= 0; i--) {
+            doutput = layers.get(i).backprop(doutput);
+        }
     }
 }
