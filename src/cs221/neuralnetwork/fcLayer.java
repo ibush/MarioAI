@@ -18,6 +18,7 @@ public class FcLayer implements Layer {
     public FcLayer(HashMap<String, Double> hparams, int inputSize, int outputSize){
         this.hparams = hparams;
         double[][] rand = Matrix.rand(inputSize, outputSize);
+        //TODO: Need to write the weights out to file for future runs
         weights = Matrix.scalarMult(rand, RANDOM_WEIGHT_MAX); //TODO: Could just have rand call above return in this range for efficiency
     }
 

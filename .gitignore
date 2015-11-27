@@ -12,4 +12,4 @@
 .idea/tasks.xml
 .idea/misc.xml
 .idea/uiDesigner.xml
-*.DS_Store
+.DS_Store

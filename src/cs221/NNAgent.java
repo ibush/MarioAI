@@ -14,9 +14,6 @@ import java.util.*;
  */
 public class NNAgent extends QAgent implements Agent{
 
-    private NeuralNet net;
-
-
     private final static boolean INDICATOR_REWARDS = true;
     private final static double RANDOM_ACTION_EPSILON = 0.2;
     private final static double STEP_SIZE = 0.01;
@@ -24,6 +21,9 @@ public class NNAgent extends QAgent implements Agent{
 
     private final static int Z_LEVEL_SCENE = 2;
     private final static int Z_LEVEL_ENEMIES = 2;
+
+    private NeuralNet net;
+    private int numFeatures;
 
     private Environment environment;
     private float prevFitScore;
@@ -60,11 +60,11 @@ public class NNAgent extends QAgent implements Agent{
             possibleActions = getPossibleActions(environment);
 
             if(net == null) {
-                int stateSize = state.length * possibleActions.size() + 1;
+                numFeatures = state.length + possibleActions.size() + 1;
                 int numActions = possibleActions.size();
                 List<LayerSpec> layerSpecs = new ArrayList<LayerSpec>();
                 //Layer 1:
-                layerSpecs.add(new LayerSpec(LayerFactory.TYPE_FULLY_CONNECTED, stateSize, numActions));
+                layerSpecs.add(new LayerSpec(LayerFactory.TYPE_FULLY_CONNECTED, numFeatures, numActions));
                 layerSpecs.add(new LayerSpec(LayerFactory.TYPE_RELU, numActions, 1));
                 //Layer 2:
                 layerSpecs.add(new LayerSpec(LayerFactory.TYPE_FULLY_CONNECTED, numActions, numActions));
@@ -108,19 +108,21 @@ public class NNAgent extends QAgent implements Agent{
     private double[][] extractFeatures(StateActionPair sap){
         // Feature extractor
         int[] state = sap.getState();
-        double[][] features = new double[1][state.length * possibleActions.size() + 1]; //TODO: Just make all the NN stuff vectors?
+        double[][] features = new double[1][numFeatures]; //TODO: Just make all the NN stuff vectors?
         int ind = 0;
+        for (int i = 0; i < state.length; i++) {
+            features[0][ind] = (state[i] == 0) ? 0.0 : 1.0;
+            ind++;
+        }
         for(int i = 0; i < possibleActions.size(); i ++) {
-            for (int j = 0; j < state.length; j++) {
-                if(Arrays.equals(possibleActions.get(i), sap.getAction())) {
-                    // State action interaction terms
-                    features[0][ind] = (state[j] == 0) ? 0.0 : 1.0;
-                }
-                ind++;
+            if(Arrays.equals(possibleActions.get(i), sap.getAction())) {
+                features[0][ind] = 1.0;
+                break;
             }
+            ind++;
         }
         // Bias term
-        features[0][ind] = 1;
+        features[0][numFeatures - 1] = 1.0;
         return(features);
     }
 
