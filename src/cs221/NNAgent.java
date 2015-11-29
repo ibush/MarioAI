@@ -24,6 +24,7 @@ public class NNAgent extends QAgent implements Agent{
 
     private NeuralNet net;
     private int numFeatures;
+    protected HashMap hparams;
 
     private Environment environment;
     private float prevFitScore;
@@ -36,7 +37,8 @@ public class NNAgent extends QAgent implements Agent{
 
     public NNAgent(){
         super("NNAgent");
-        learnedParams = new HashMap<String,Double>(); //hparams
+        hparams = new HashMap<String,Double>();
+        learnedParams = new HashMap<Integer,double[][]>();
 
         reset();
     }
@@ -72,9 +74,9 @@ public class NNAgent extends QAgent implements Agent{
                 //Layer 3:
                 layerSpecs.add(new LayerSpec(LayerFactory.TYPE_FULLY_CONNECTED, numActions, 1));
 
-                learnedParams.put(Layer.STEP_SIZE, STEP_SIZE);
+                hparams.put(Layer.STEP_SIZE, STEP_SIZE);
 
-                net = new NeuralNet(layerSpecs, learnedParams);
+                net = new NeuralNet(layerSpecs, hparams, learnedParams);
             }
         }
 
