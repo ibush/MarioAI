@@ -10,9 +10,10 @@ import java.util.HashMap;
 public class ReluLayer implements Layer {
 
     private double[][] dRelu; //Partial derivative of ReLU
+    private String name;
 
-
-    public ReluLayer(HashMap<String, Double> hparams, int inputSize, int outputSize){
+    public ReluLayer(String name,HashMap<String, Double> hparams, int inputSize, int outputSize){
+        this.name = name;
         dRelu = new double[outputSize][inputSize];
     }
 
@@ -33,4 +34,7 @@ public class ReluLayer implements Layer {
         return result;
     }
 
+    public String getName(){return(name);}
+
+    public double[][] getWeights(){return(new double[][]{{0}});}
 }

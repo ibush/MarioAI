@@ -17,15 +17,15 @@ public class LayerFactory {
     public static final String TYPE_RELU = "relu";
 
 
-    public static Layer genLayer(String type, HashMap<String, Double> hparams, int inputSize, int outputSize) {
+    public static Layer genLayer(String name, String type, HashMap<String, Double> hparams, int inputSize, int outputSize) {
         if (type.equals(TYPE_FULLY_CONNECTED)) {
-            return new FcLayer(hparams, inputSize, outputSize);
+            return new FcLayer(name, hparams, inputSize, outputSize);
         } else if (type.equals(TYPE_CONVOLUTION)) {
             System.out.println("NOT YET IMPLEMENTED");
         } else if (type.equals(TYPE_SOFTMAX)) {
             System.out.println("NOT YET IMPLEMENTED");
         } else if (type.equals(TYPE_RELU)) {
-            return new ReluLayer(hparams, inputSize, outputSize);
+            return new ReluLayer(name, hparams, inputSize, outputSize);
         }else {
             System.out.println("Layer not supported");
         }

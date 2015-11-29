@@ -2,11 +2,11 @@ package cs221;
 
 import ch.idsia.benchmark.mario.environments.Environment;
 import ch.idsia.agents.Agent;
-import cs221.neuralnetwork.Layer;
-import cs221.neuralnetwork.LayerFactory;
-import cs221.neuralnetwork.LayerSpec;
-import cs221.neuralnetwork.NeuralNet;
+import cs221.neuralnetwork.*;
 
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.*;
 
 /**
@@ -16,11 +16,15 @@ public class NNAgent extends QAgent implements Agent{
 
     private final static boolean INDICATOR_REWARDS = true;
     private final static double RANDOM_ACTION_EPSILON = 0.2;
-    private final static double STEP_SIZE = 0.01;
+    private final static double STEP_SIZE = 0.01; // also known as learning rate
     private final static double DISCOUNT = 0.8;
 
     private final static int Z_LEVEL_SCENE = 2;
     private final static int Z_LEVEL_ENEMIES = 2;
+
+    // Neural Network Parameters
+    private final static double REG = 0.01; // regularization not yet implemented
+    private final static double REPLAY_SIZE = 1000;
 
     private NeuralNet net;
     private int numFeatures;
@@ -33,12 +37,14 @@ public class NNAgent extends QAgent implements Agent{
     private Random numGenerator = new Random();
     private ArrayList<boolean[]> possibleActions;
 
+    private NNStats stats;
+
 
     public NNAgent(){
         super("NNAgent");
         learnedParams = new HashMap<String,Double>(); //hparams
-
-        reset();
+        stats = new NNStats(name);
+         reset();
     }
 
     public void integrateObservation(Environment environment) {
@@ -64,13 +70,13 @@ public class NNAgent extends QAgent implements Agent{
                 int numActions = possibleActions.size();
                 List<LayerSpec> layerSpecs = new ArrayList<LayerSpec>();
                 //Layer 1:
-                layerSpecs.add(new LayerSpec(LayerFactory.TYPE_FULLY_CONNECTED, numFeatures, numActions));
-                layerSpecs.add(new LayerSpec(LayerFactory.TYPE_RELU, numActions, 1));
+                layerSpecs.add(new LayerSpec("fc1",LayerFactory.TYPE_FULLY_CONNECTED, numFeatures, numActions));
+                layerSpecs.add(new LayerSpec("relu1",LayerFactory.TYPE_RELU, numActions, 1));
                 //Layer 2:
-                layerSpecs.add(new LayerSpec(LayerFactory.TYPE_FULLY_CONNECTED, numActions, numActions));
-                layerSpecs.add(new LayerSpec(LayerFactory.TYPE_RELU, numActions, 1));
+                layerSpecs.add(new LayerSpec("fc2",LayerFactory.TYPE_FULLY_CONNECTED, numActions, numActions));
+                layerSpecs.add(new LayerSpec("relu2",LayerFactory.TYPE_RELU, numActions, 1));
                 //Layer 3:
-                layerSpecs.add(new LayerSpec(LayerFactory.TYPE_FULLY_CONNECTED, numActions, 1));
+                layerSpecs.add(new LayerSpec("fc3",LayerFactory.TYPE_FULLY_CONNECTED, numActions, 1));
 
                 learnedParams.put(Layer.STEP_SIZE, STEP_SIZE);
 
@@ -85,8 +91,14 @@ public class NNAgent extends QAgent implements Agent{
             if(reward != 0) reward = reward > 0 ? 1.0f : -1.0f;
         }
 
-        double update = (evalScore(SAP) - reward - DISCOUNT * bestScore); //TODO: Rethink this
-        net.backprop(update);
+        double error = (evalScore(SAP) - reward - DISCOUNT * bestScore); //TODO: Rethink this
+        net.backprop(error);
+
+        // Print learning statistics
+        stats.addError(error);
+        stats.addWeights(net);
+        stats.addLearningRate(STEP_SIZE);
+        stats.flush();
 
         // Update Persistent Parameters
         state = succState;

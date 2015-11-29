@@ -7,6 +7,7 @@ import java.util.HashMap;
  */
 public class LayerSpec {
 
+    private String name;
     private String type;
     private HashMap<String, Double> args;
 
@@ -14,7 +15,8 @@ public class LayerSpec {
         this.type = type;
         args = new HashMap<String, Double>();
     }
-    public LayerSpec(String type, int inputSize, int outputSize){
+    public LayerSpec(String name, String type, int inputSize, int outputSize){
+        this.name = name;
         this.type = type;
         args = new HashMap<String, Double>();
         addArg(Layer.INPUT_SIZE, new Double(inputSize));
@@ -32,4 +34,6 @@ public class LayerSpec {
     public String getType(){
         return(type);
     }
+
+    public String getName(){return(name);}
 }

@@ -20,7 +20,8 @@ public class NeuralNet {
     public NeuralNet(List<LayerSpec> layerSpecs, HashMap<String,Double> hparams){
         layers = new ArrayList<Layer>();
         for(LayerSpec layerSpec : layerSpecs) {
-            layers.add(LayerFactory.genLayer(layerSpec.getType(), hparams,
+            layers.add(LayerFactory.genLayer(layerSpec.getName(),
+                    layerSpec.getType(), hparams,
                     (int)Math.floor(layerSpec.getArg(Layer.INPUT_SIZE)),
                     (int)Math.floor(layerSpec.getArg(Layer.OUTPUT_SIZE))));
         }
@@ -42,5 +43,10 @@ public class NeuralNet {
         for(int i = layers.size() - 1; i >= 0; i--) {
             doutput = layers.get(i).backprop(doutput);
         }
+    }
+
+    // For printing stats
+    public ArrayList<Layer> getLayers(){
+        return(layers);
     }
 }

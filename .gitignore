@@ -13,3 +13,6 @@
 .idea/misc.xml
 .idea/uiDesigner.xml
 .DS_Store
+
+/bin
+*.RHistory

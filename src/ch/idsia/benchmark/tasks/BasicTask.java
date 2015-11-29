@@ -81,9 +81,9 @@ public boolean runSingleEpisode(final int repetitionsOfSingleEpisode, boolean ou
     PrintWriter weightsStats = null;
     if(outputToFile) {
         try {
-            fitnessScores = new PrintWriter("fitnessScores_" + agent.getName(), "UTF-8");
-            distance = new PrintWriter("distance_" + agent.getName(), "UTF-8");
-            if(agent instanceof QLinearAgent) weightsStats = new PrintWriter("weightsStats_" + agent.getName(), "UTF-8");
+            fitnessScores = new PrintWriter("stats/fitnessScores_" + agent.getName(), "UTF-8");
+            distance = new PrintWriter("stats/distance_" + agent.getName(), "UTF-8");
+            if(agent instanceof QLinearAgent) weightsStats = new PrintWriter("stats/weightsStats_" + agent.getName(), "UTF-8");
         } catch (Exception e) {
             System.out.println("Could not open output files");
         }
@@ -91,6 +91,7 @@ public boolean runSingleEpisode(final int repetitionsOfSingleEpisode, boolean ou
     long c = System.currentTimeMillis();
     for (int r = 0; r < repetitionsOfSingleEpisode; ++r)
     {
+        //System.out.println("Iteration : " + Integer.toString(r));
         this.reset();
         while (!environment.isLevelFinished())
         {
@@ -126,8 +127,15 @@ public boolean runSingleEpisode(final int repetitionsOfSingleEpisode, boolean ou
         environment.getEvaluationInfo().setTaskName(name);
         this.evaluationInfo = environment.getEvaluationInfo().clone();
 
-        if(fitnessScores != null) fitnessScores.println(environment.getEvaluationInfo().computeWeightedFitness());
-        if(distance!= null) distance.println(environment.getEvaluationInfo().computeDistancePassed());
+        if(fitnessScores != null){
+            fitnessScores.println(environment.getEvaluationInfo().computeWeightedFitness());
+            fitnessScores.flush();
+        }
+        if(distance!= null){
+            distance.println(environment.getEvaluationInfo().computeDistancePassed());
+            distance.flush();
+        }
+
         //System.out.println(Arrays.toString((double[])learnedParams.get("weights")));
     }
 
@@ -173,7 +181,7 @@ public void doEpisodes(int amount, boolean verbose, final int repetitionsOfSingl
     if(agent instanceof QAgent ) {
         try{
             //read params from file
-            File file = new File("params_" + agent.getName());
+            File file = new File("params/params_" + agent.getName());
             ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file));
             learnedParams = (HashMap)ois.readObject();
             ois.close();
@@ -203,7 +211,7 @@ public void doEpisodes(int amount, boolean verbose, final int repetitionsOfSingl
     if (agent instanceof QAgent) {
     //Save params to file
         try {
-            ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("params_" + agent.getName()));
+            ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("params/params_" + agent.getName()));
             out.writeObject(learnedParams);
             out.close();
         } catch (IOException e) {

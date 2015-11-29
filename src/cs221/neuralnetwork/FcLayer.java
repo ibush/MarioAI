@@ -13,9 +13,10 @@ public class FcLayer implements Layer {
     private HashMap<String, Double> hparams;
     private double[][] weights;
     private double[][] input; //Stored for use in backprop
+    private String name;
 
-
-    public FcLayer(HashMap<String, Double> hparams, int inputSize, int outputSize){
+    public FcLayer(String name, HashMap<String, Double> hparams, int inputSize, int outputSize){
+        this.name = name;
         this.hparams = hparams;
         double[][] rand = Matrix.rand(inputSize, outputSize);
         //TODO: Need to write the weights out to file for future runs
@@ -34,6 +35,14 @@ public class FcLayer implements Layer {
         
         weights = Matrix.add(weights, change);
         return dWeights;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public double[][] getWeights() {
+        return(weights);
     }
 
 }
