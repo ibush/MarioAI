@@ -3,12 +3,10 @@ package cs221;
 import java.awt.*;
 import java.util.Random;
 
-/**
- * Created by ibush on 10/25/15.
- */
 public class Matrix {
 
     public static double[][] subtract(double[][] m1, double[][] m2) {
+        assert m1.length == m2.length && m1[0].length == m2[0].length;
         double[][] result = new double[m1.length][m1[0].length];
         for(int i = 0; i < m1.length; i++ ) {
             for(int j = 0; j < m1[i].length; j++) {
@@ -19,6 +17,7 @@ public class Matrix {
     }
 
     public static double[][] add(double[][] m1, double[][] m2) {
+        assert m1.length == m2.length && m1[0].length == m2[0].length;
         double[][] result = new double[m1.length][m1[0].length];
         for(int i = 0; i < m1.length; i++ ) {
             for(int j = 0; j < m1[i].length; j++) {
@@ -29,6 +28,7 @@ public class Matrix {
     }
 
     public static double[][] multiply(double[][] m1, double[][] m2) {
+        assert m1.length == m2.length && m1[0].length == m2[0].length;
         int m1Rows = m1.length;
         int m1Cols = m1[0].length;
         int m2Rows = m2.length;
@@ -67,22 +67,8 @@ public class Matrix {
         return result;
     }
 
-    // Calculates Rectified Linear Unit function on matrix m.
-    // Stores the partial derivative (1 if m[i][j] > 0) in dRelu
-    public static double[][] relu(double[][] m, double[][] dRelu) {
-        double[][] result = new double[m.length][m[0].length];
-        for(int i = 0; i < m.length; i++ ) {
-            for(int j = 0; j < m[i].length; j++) {
-                if(m[i][j] > 0) {
-                    result[i][j] = m[i][j];
-                    dRelu[i][j] = 1;
-                } else {
-                    result[i][j] = dRelu[i][j] = 0;
-                }
-            }
-        }
-        return result;
-    }
+
+    // Vector Functions
 
     public static double[] subtract(double[] v1, double[] v2) {
         double[] result = new double[v1.length];
@@ -117,6 +103,8 @@ public class Matrix {
     }
 
     // Extended methods for neural network computations
+
+
     // Returns a (m x n) matrix of random numbers in [0,1]
     public static double[][] rand(int m, int n){
         Random numGenerator = new Random();
@@ -129,16 +117,56 @@ public class Matrix {
         return result;
     }
 
+    // Returns a (m x n) matrix of random numbers draw from Norm(mu=0,sigma=stddev)
+    public static double[][] norm(int m, int n, double stddev){
+        Random numGenerator = new Random();
+        double[][] result = new double[m][n];
+        for(int i = 0; i < m; i++ ) {
+            for(int j = 0; j < n; j++) {
+                result[i][j] = numGenerator.nextGaussian() * stddev;
+            }
+        }
+        return result;
+    }
+
     // return a (m x n) matrix of ones
     public static double[][] ones(int m, int n){
-        System.out.println("NOT YET IMPLEMENTED");
-        return new double[1][1];
+        double[][] result = new double[m][n];
+        for(int i = 0; i < m; i++ ) {
+            for(int j = 0; j < n; j++) {
+                result[i][j] = 1;
+            }
+        }
+        return result;
     }
 
     // return a (m x n) matrix of zeros
     public static double[][] zeros(int m, int n){
-        System.out.println("NOT YET IMPLEMENTED");
-        return new double[1][1];
+        double[][] result = new double[m][n];
+        for(int i = 0; i < m; i++ ) {
+            for(int j = 0; j < n; j++) {
+                result[i][j] = 0;
+            }
+        }
+        return result;
     }
+
+    // Calculates Rectified Linear Unit function on matrix m.
+    // Stores the partial derivative (1 if m[i][j] > 0) in dRelu
+    public static double[][] relu(double[][] m, double[][] dRelu) {
+        double[][] result = new double[m.length][m[0].length];
+        for(int i = 0; i < m.length; i++ ) {
+            for(int j = 0; j < m[i].length; j++) {
+                if(m[i][j] > 0) {
+                    result[i][j] = m[i][j];
+                    dRelu[i][j] = 1;
+                } else {
+                    result[i][j] = dRelu[i][j] = 0;
+                }
+            }
+        }
+        return result;
+    }
+
 
 }

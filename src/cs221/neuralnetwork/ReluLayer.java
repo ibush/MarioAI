@@ -12,22 +12,22 @@ public class ReluLayer implements Layer {
     private double[][] dRelu; //Partial derivative of ReLU
     private String name;
 
-    public ReluLayer(int layerNum,HashMap<String, Double> hparams, int inputSize, int outputSize){
+    public ReluLayer(int layerNum, int inputSize, int outputSize){
         this.name = "relu" + Integer.toString(layerNum);
-        dRelu = new double[outputSize][inputSize];
+        dRelu = new double[inputSize][outputSize];
     }
 
     public double[][] forward(double[][] input){
         return Matrix.relu(input, dRelu);
     }
 
-    public double[][] backprop(double[][] doutput){
+    public double[][] backprop(double[][] doutput, double lr){
 
         //TODO: Rethink this (dimensions correct?)
-        double[][] result = new double[dRelu.length][dRelu[0].length];
-        for(int i = 0; i < dRelu.length; i++ ) {
-            for(int j = 0; j < dRelu[i].length; j++) {
-                result[i][j] = doutput[j][i] * dRelu[i][j];
+        double[][] result = new double[doutput.length][doutput[0].length];
+        for(int i = 0; i < doutput.length; i++ ) {
+            for(int j = 0; j < doutput[i].length; j++) {
+                result[i][j] = doutput[i][j] * dRelu[i][j];
             }
         }
 

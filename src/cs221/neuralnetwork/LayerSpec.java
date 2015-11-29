@@ -1,39 +1,27 @@
 package cs221.neuralnetwork;
 
-import java.util.HashMap;
-
-/**
- * Created by matt on 11/8/15.
- */
 public class LayerSpec {
 
     private String name;
     private String type;
-    private HashMap<String, Double> args;
+    private int inputSize;
+    private int outputSize;
 
     public LayerSpec(String type){
         this.type = type;
-        args = new HashMap<String, Double>();
     }
-    public LayerSpec(String name, String type, int inputSize, int outputSize){
-        this.name = name;
+    public LayerSpec(String type, int inputSize, int outputSize){
         this.type = type;
-        args = new HashMap<String, Double>();
-        addArg(Layer.INPUT_SIZE, new Double(inputSize));
-        addArg(Layer.OUTPUT_SIZE, new Double(outputSize));
+        this.inputSize = inputSize;
+        this.outputSize = outputSize;
     }
 
-    public void addArg(String arg, Double val){
-        args.put(arg,val);
-    }
+    public int getInputSize(){return(inputSize);}
 
-    public Double getArg(String arg){
-        return(args.get(arg));
-    }
+    public int getOutputSize(){return(outputSize);}
 
     public String getType(){
         return(type);
     }
 
-    public String getName(){return(name);}
 }

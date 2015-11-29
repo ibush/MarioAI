@@ -14,19 +14,24 @@ import java.util.*;
  */
 public class NNAgent extends QAgent implements Agent{
 
+    // Reinforcement Learning Parameters
     private final static boolean INDICATOR_REWARDS = true;
     private final static double RANDOM_ACTION_EPSILON = 0.2;
-    private final static double STEP_SIZE = 0.01; // also known as learning rate
     private final static double DISCOUNT = 0.8;
 
+    // Simulation Parameters
     private final static int Z_LEVEL_SCENE = 2;
     private final static int Z_LEVEL_ENEMIES = 2;
 
     // Neural Network Parameters
+    private final static int BATCH_SIZE = 1;
+    private final static int REPLAY_SIZE = 1;
+    private final static int H1_SIZE = 50;
+    private final static int H2_SIZE = 50;
     private final static double REG = 0.01; // regularization not yet implemented
-    private final static double REPLAY_SIZE = 1000;
+    private final static double LR = 0.01;
 
-    private NeuralNet net;
+
     private int numFeatures;
     protected HashMap hparams;
 
@@ -38,16 +43,30 @@ public class NNAgent extends QAgent implements Agent{
     private Random numGenerator = new Random();
     private ArrayList<boolean[]> possibleActions;
 
+    private NeuralNet net;
     private NNStats stats;
+
+    // Persistent Objects
+    private ReplayMemory rm;
+    private Integer iter;
+    private HashMap<String, double[][]> weights;
 
 
     public NNAgent(){
         super("NNAgent");
         hparams = new HashMap<String,Double>();
-        learnedParams = new HashMap<Integer,double[][]>();
+        learnedParams = new HashMap<Integer,Object>();
         stats = new NNStats(name);
 
         reset();
+    }
+
+    // Unpack persistent objects
+    public void setLearnedParams(HashMap learnedParams){
+        this.learnedParams = learnedParams;
+
+
+
     }
 
     public void integrateObservation(Environment environment) {
@@ -60,7 +79,7 @@ public class NNAgent extends QAgent implements Agent{
     }
 
     public void integrateObservation(int[] succState, float currFitScore) {
-        // Initial values
+        // If this is the first observation of the round
         if(state == null){
             state = succState;
             action = new boolean[Environment.numberOfKeys];
@@ -68,22 +87,43 @@ public class NNAgent extends QAgent implements Agent{
             bestScore = 0;
             possibleActions = getPossibleActions(environment);
 
+
+            // Unpack Values
+            if(learnedParams.containsKey("weights")){
+                iter = (Integer)learnedParams.get("iter");
+                rm = (ReplayMemory)learnedParams.get("rm");
+                weights = (HashMap<String,double[][]>)learnedParams.get("weights");
+                System.out.println("Starting Simulation at iteration : " + Integer.toString(iter));
+            }else{
+                // If this is the first observation of the simulation/trials
+                rm = new ReplayMemory(REPLAY_SIZE);
+                weights = new HashMap<String, double[][]>();
+                iter = 1;
+                learnedParams.put("weights", weights);
+                learnedParams.put("rm",rm);
+                learnedParams.put("iter",iter);
+            }
+
             if(net == null) {
                 numFeatures = state.length + possibleActions.size() + 1;
                 int numActions = possibleActions.size();
+
+
+                // Network Architecture
                 List<LayerSpec> layerSpecs = new ArrayList<LayerSpec>();
                 //Layer 1:
-                layerSpecs.add(new LayerSpec("fc1",LayerFactory.TYPE_FULLY_CONNECTED, numFeatures, numActions));
-                layerSpecs.add(new LayerSpec("relu1",LayerFactory.TYPE_RELU, numActions, 1));
+                layerSpecs.add(new LayerSpec(LayerFactory.TYPE_FULLY_CONNECTED, numFeatures, H1_SIZE));
+                layerSpecs.add(new LayerSpec(LayerFactory.TYPE_RELU, BATCH_SIZE,H1_SIZE));
                 //Layer 2:
-                layerSpecs.add(new LayerSpec("fc2",LayerFactory.TYPE_FULLY_CONNECTED, numActions, numActions));
-                layerSpecs.add(new LayerSpec("relu2",LayerFactory.TYPE_RELU, numActions, 1));
+                layerSpecs.add(new LayerSpec(LayerFactory.TYPE_FULLY_CONNECTED, H1_SIZE, H2_SIZE));
+                layerSpecs.add(new LayerSpec(LayerFactory.TYPE_RELU, BATCH_SIZE, H1_SIZE));
                 //Layer 3:
-                layerSpecs.add(new LayerSpec("fc3",LayerFactory.TYPE_FULLY_CONNECTED, numActions, 1));
+                layerSpecs.add(new LayerSpec(LayerFactory.TYPE_FULLY_CONNECTED, H2_SIZE, 1));
 
-                hparams.put(Layer.STEP_SIZE, STEP_SIZE);
+                net = new NeuralNet(layerSpecs, weights);
 
-                net = new NeuralNet(layerSpecs, hparams, learnedParams);
+
+
             }
         }
 
@@ -94,16 +134,28 @@ public class NNAgent extends QAgent implements Agent{
             if(reward != 0) reward = reward > 0 ? 1.0f : -1.0f;
         }
 
-        double error = (evalScore(SAP) - reward - DISCOUNT * bestScore); //TODO: Rethink this
-        net.backprop(error);
 
-        // Print learning statistics
+        double trueScore = reward + DISCOUNT * bestScore;
+        rm.addMemory(extractFeatures(SAP)[0], trueScore);
+        double error = (evalScore(SAP) - trueScore); //TODO: Rethink this
+
+        // only do this update on every n-th iteration
+        List<double[][]> batch = rm.sample(BATCH_SIZE);
+        double[][] trainX = batch.get(0);
+        double[][] trainy = batch.get(1);
+        double[][] pred = net.forward(trainX);
+        double[][] trainError = Matrix.subtract(pred, trainy);
+        net.backprop(trainError, LR);
+
+
+        // Print learning statistics - on every nth iteration
         stats.addError(error);
         stats.addWeights(net);
-        stats.addLearningRate(STEP_SIZE);
+        stats.addLearningRate(LR);
         stats.flush();
 
         // Update Persistent Parameters
+        iter++;
         state = succState;
         action = succAction;
         prevFitScore = currFitScore;
@@ -144,7 +196,7 @@ public class NNAgent extends QAgent implements Agent{
     //TODO: extractFeatures once in integrateObservation and store rather than doing it twice per round?
     private double evalScore(StateActionPair sap){
         double[][] features = extractFeatures(sap);
-        return net.forward(features);
+        return net.forward(features)[0][0];
     }
 
     private boolean[] findBestAction(Environment env, int[] state) {
