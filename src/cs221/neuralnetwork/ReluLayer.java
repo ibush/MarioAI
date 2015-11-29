@@ -12,8 +12,8 @@ public class ReluLayer implements Layer {
     private double[][] dRelu; //Partial derivative of ReLU
     private String name;
 
-    public ReluLayer(String name,HashMap<String, Double> hparams, int inputSize, int outputSize){
-        this.name = name;
+    public ReluLayer(int layerNum,HashMap<String, Double> hparams, int inputSize, int outputSize){
+        this.name = "relu" + Integer.toString(layerNum);
         dRelu = new double[outputSize][inputSize];
     }
 

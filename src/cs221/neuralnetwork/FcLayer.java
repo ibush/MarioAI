@@ -16,8 +16,9 @@ public class FcLayer implements Layer {
     private double[][] input; //Stored for use in backprop
     private String name;
 
-    public FcLayer(String name, HashMap<String, Double> hparams, int inputSize, int outputSize){
-        this.name = name;
+    public FcLayer(int layerNum, HashMap<String, Double> hparams, HashMap<Integer, double[][]> weightsMap){
+        this.layerNum = layerNum;
+        this.name = "fc" + Integer.toString(layerNum);
         this.hparams = hparams;
         this.weightsMap = weightsMap;
 

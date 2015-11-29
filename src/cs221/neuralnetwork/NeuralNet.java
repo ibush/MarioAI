@@ -11,20 +11,18 @@ import java.util.List;
  */
 public class NeuralNet {
 
-    private double lr;
-    private double reg;
 
     private ArrayList<Layer> layers;
     private HashMap<String, Double> hparams;
 
     public NeuralNet(List<LayerSpec> layerSpecs, HashMap<String,Double> hparams, HashMap<Integer, double[][]> weightsMap){
         layers = new ArrayList<Layer>();
-        for(LayerSpec layerSpec : layerSpecs) {
-            layers.add(LayerFactory.genLayer(layerSpec.getName(),
-                    layerSpec.getType(), hparams,
-                    (int)Math.floor(layerSpec.getArg(Layer.INPUT_SIZE)),
-                    (int)Math.floor(layerSpec.getArg(Layer.OUTPUT_SIZE))));
+        for(int i=0; i< layerSpecs.size(); i++) {
+            layers.add(LayerFactory.genLayer(i, layerSpecs.get(i).getType(), hparams, weightsMap,
+                    (int) Math.floor(layerSpecs.get(i).getArg(Layer.INPUT_SIZE)),
+                    (int)Math.floor(layerSpecs.get(i).getArg(Layer.OUTPUT_SIZE))));
         }
+
         this.hparams = hparams;
     }
 
