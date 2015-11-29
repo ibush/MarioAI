@@ -17,7 +17,7 @@ public class NeuralNet {
     private ArrayList<Layer> layers;
     private HashMap<String, Double> hparams;
 
-    public NeuralNet(List<LayerSpec> layerSpecs, HashMap<String,Double> hparams){
+    public NeuralNet(List<LayerSpec> layerSpecs, HashMap<String,Double> hparams, HashMap<Integer, double[][]> weightsMap){
         layers = new ArrayList<Layer>();
         for(LayerSpec layerSpec : layerSpecs) {
             layers.add(LayerFactory.genLayer(layerSpec.getName(),

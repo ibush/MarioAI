@@ -9,8 +9,9 @@ import java.util.HashMap;
  */
 public class FcLayer implements Layer {
 
-    private static final double RANDOM_WEIGHT_MAX = 0.01;
+    int layerNum;
     private HashMap<String, Double> hparams;
+    HashMap<Integer, double[][]> weightsMap;
     private double[][] weights;
     private double[][] input; //Stored for use in backprop
     private String name;
@@ -18,9 +19,9 @@ public class FcLayer implements Layer {
     public FcLayer(String name, HashMap<String, Double> hparams, int inputSize, int outputSize){
         this.name = name;
         this.hparams = hparams;
-        double[][] rand = Matrix.rand(inputSize, outputSize);
-        //TODO: Need to write the weights out to file for future runs
-        weights = Matrix.scalarMult(rand, RANDOM_WEIGHT_MAX); //TODO: Could just have rand call above return in this range for efficiency
+        this.weightsMap = weightsMap;
+
+        weights = weightsMap.get(layerNum);
     }
 
     public double[][] forward(double[][] input){
@@ -34,6 +35,7 @@ public class FcLayer implements Layer {
         double[][] change = Matrix.scalarMult(dWeights, -stepSize);
         
         weights = Matrix.add(weights, change);
+        weightsMap.put(layerNum, weights);
         return dWeights;
     }
 
