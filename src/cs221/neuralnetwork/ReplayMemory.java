@@ -9,6 +9,8 @@ import java.io.Serializable;
 
 public class ReplayMemory implements Serializable {
 
+    static final boolean RANDOM_STORAGE = false;
+
     Random randgen;
     ArrayList<double[]> trainX;
     ArrayList<Double> trainy;
@@ -31,9 +33,12 @@ public class ReplayMemory implements Serializable {
             trainy.add(index, truth);
             index++;
         }else{
-            int randind = randgen.nextInt(capacity);
-            trainX.add(randind, featureVec);
-            trainy.add(randind, truth);
+            int replaceInd = 0;
+            if(RANDOM_STORAGE) {
+                replaceInd = randgen.nextInt(capacity);
+            }
+            trainX.add(replaceInd, featureVec);
+            trainy.add(replaceInd, truth);
         }
     }
 
