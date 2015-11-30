@@ -5,6 +5,8 @@
 *.blg
 *.bbl
 *.zip
+*blx.bib
+*.xml
 *#
 *~
 *.class
