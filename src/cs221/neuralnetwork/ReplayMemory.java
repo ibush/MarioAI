@@ -5,8 +5,9 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
+import java.io.Serializable;
 
-public class ReplayMemory {
+public class ReplayMemory implements Serializable {
 
     Random randgen;
     ArrayList<double[]> trainX;

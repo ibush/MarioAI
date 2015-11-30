@@ -215,6 +215,7 @@ public void doEpisodes(int amount, boolean verbose, final int repetitionsOfSingl
             out.writeObject(learnedParams);
             out.close();
         } catch (IOException e) {
+            e.printStackTrace();
             System.out.println("Could not write params to file");
         }
     }

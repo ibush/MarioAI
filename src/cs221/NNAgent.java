@@ -4,9 +4,6 @@ import ch.idsia.benchmark.mario.environments.Environment;
 import ch.idsia.agents.Agent;
 import cs221.neuralnetwork.*;
 
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
 import java.util.*;
 
 /**
@@ -48,9 +45,8 @@ public class NNAgent extends QAgent implements Agent{
 
     // Persistent Objects
     private ReplayMemory rm;
-    private Integer iter;
+    private Iteration iter;
     private HashMap<String, double[][]> weights;
-
 
     public NNAgent(){
         super("NNAgent");
@@ -64,9 +60,6 @@ public class NNAgent extends QAgent implements Agent{
     // Unpack persistent objects
     public void setLearnedParams(HashMap learnedParams){
         this.learnedParams = learnedParams;
-
-
-
     }
 
     public void integrateObservation(Environment environment) {
@@ -90,15 +83,15 @@ public class NNAgent extends QAgent implements Agent{
 
             // Unpack Values
             if(learnedParams.containsKey("weights")){
-                iter = (Integer)learnedParams.get("iter");
+                iter = (Iteration)learnedParams.get("iter");
                 rm = (ReplayMemory)learnedParams.get("rm");
                 weights = (HashMap<String,double[][]>)learnedParams.get("weights");
-                System.out.println("Starting Simulation at iteration : " + Integer.toString(iter));
+                System.out.println("Starting Simulation at iteration : " + Integer.toString(iter.value));
             }else{
                 // If this is the first observation of the simulation/trials
                 rm = new ReplayMemory(REPLAY_SIZE);
                 weights = new HashMap<String, double[][]>();
-                iter = 1;
+                iter = new Iteration(1);
                 learnedParams.put("weights", weights);
                 learnedParams.put("rm",rm);
                 learnedParams.put("iter",iter);
@@ -122,8 +115,6 @@ public class NNAgent extends QAgent implements Agent{
 
                 net = new NeuralNet(layerSpecs, weights);
 
-
-
             }
         }
 
@@ -137,7 +128,7 @@ public class NNAgent extends QAgent implements Agent{
 
         double trueScore = reward + DISCOUNT * bestScore;
         rm.addMemory(extractFeatures(SAP)[0], trueScore);
-        double error = (evalScore(SAP) - trueScore); //TODO: Rethink this
+        double error = (evalScore(SAP) - trueScore);
 
         // only do this update on every n-th iteration
         List<double[][]> batch = rm.sample(BATCH_SIZE);
@@ -155,7 +146,7 @@ public class NNAgent extends QAgent implements Agent{
         stats.flush();
 
         // Update Persistent Parameters
-        iter++;
+        iter.value++;
         state = succState;
         action = succAction;
         prevFitScore = currFitScore;
@@ -175,7 +166,7 @@ public class NNAgent extends QAgent implements Agent{
     private double[][] extractFeatures(StateActionPair sap){
         // Feature extractor
         int[] state = sap.getState();
-        double[][] features = new double[1][numFeatures]; //TODO: Just make all the NN stuff vectors?
+        double[][] features = new double[1][numFeatures];
         int ind = 0;
         for (int i = 0; i < state.length; i++) {
             features[0][ind] = (state[i] == 0) ? 0.0 : 1.0;

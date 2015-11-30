@@ -34,7 +34,6 @@ public class NeuralNet {
 
     // Integrates that the previous forward call produced the given actual reward
     public void backprop(double[][] doutput, double lr){
-        //double[][] doutput = {{error}}; //TODO: Rethink this
         for(int i = layers.size() - 1; i >= 0; i--) {
             doutput = layers.get(i).backprop(doutput, lr);
         }
