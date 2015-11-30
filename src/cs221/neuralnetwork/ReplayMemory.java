@@ -5,8 +5,11 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
+import java.io.Serializable;
 
-public class ReplayMemory {
+public class ReplayMemory implements Serializable {
+
+    static final boolean RANDOM_STORAGE = false;
 
     Random randgen;
     ArrayList<double[]> trainX;
@@ -30,9 +33,12 @@ public class ReplayMemory {
             trainy.add(index, truth);
             index++;
         }else{
-            int randind = randgen.nextInt(capacity);
-            trainX.add(randind, featureVec);
-            trainy.add(randind, truth);
+            int replaceInd = 0;
+            if(RANDOM_STORAGE) {
+                replaceInd = randgen.nextInt(capacity);
+            }
+            trainX.add(replaceInd, featureVec);
+            trainy.add(replaceInd, truth);
         }
     }
 

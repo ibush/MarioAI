@@ -23,7 +23,6 @@ public class ReluLayer implements Layer {
 
     public double[][] backprop(double[][] doutput, double lr){
 
-        //TODO: Rethink this (dimensions correct?)
         double[][] result = new double[doutput.length][doutput[0].length];
         for(int i = 0; i < doutput.length; i++ ) {
             for(int j = 0; j < doutput[i].length; j++) {
