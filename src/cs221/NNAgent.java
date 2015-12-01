@@ -118,15 +118,20 @@ public class NNAgent extends QAgent implements Agent{
             }
         }
 
+        // state and action denote (s,a) while succState and succAction denote (s'a')
+        // Reward denotes r
         StateActionPair SAP = new StateActionPair(state, action);
         boolean[] succAction = findBestAction(environment, succState);
+        StateActionPair succSAP = new StateActionPair(succState, succAction);
+        double succBestScore = evalScore(succSAP);
+
         float reward = currFitScore - prevFitScore;
         if(INDICATOR_REWARDS) {
             if(reward != 0) reward = reward > 0 ? 1.0f : -1.0f;
         }
 
 
-        double trueScore = reward + DISCOUNT * bestScore;
+        double trueScore = reward + DISCOUNT * succBestScore;
         rm.addMemory(extractFeatures(SAP)[0], trueScore);
         double error = (evalScore(SAP) - trueScore);
 
