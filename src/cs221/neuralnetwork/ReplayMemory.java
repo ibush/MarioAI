@@ -36,6 +36,8 @@ public class ReplayMemory implements Serializable {
             int replaceInd = 0;
             if(RANDOM_STORAGE) {
                 replaceInd = randgen.nextInt(capacity);
+            }else{
+                index = 0;
             }
             trainX.add(replaceInd, featureVec);
             trainy.add(replaceInd, truth);

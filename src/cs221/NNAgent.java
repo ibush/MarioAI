@@ -21,8 +21,10 @@ public class NNAgent extends QAgent implements Agent{
     private final static int Z_LEVEL_ENEMIES = 2;
 
     // Neural Network Parameters
-    private final static int BATCH_SIZE = 1;
-    private final static int REPLAY_SIZE = 1;
+    private final static int STAT_INTERVAL = 20;
+    private final static int UPDATE_INTERVAL = 20;
+    private final static int BATCH_SIZE = 50;
+    private final static int REPLAY_SIZE = 5000;
     private final static int H1_SIZE = 50;
     private final static int H2_SIZE = 50;
     private final static double REG = 0.01; // regularization not yet implemented
@@ -133,22 +135,25 @@ public class NNAgent extends QAgent implements Agent{
 
         double trueScore = reward + DISCOUNT * succBestScore;
         rm.addMemory(extractFeatures(SAP)[0], trueScore);
-        double error = (evalScore(SAP) - trueScore);
 
         // only do this update on every n-th iteration
-        List<double[][]> batch = rm.sample(BATCH_SIZE);
-        double[][] trainX = batch.get(0);
-        double[][] trainy = batch.get(1);
-        double[][] pred = net.forward(trainX);
-        double[][] trainError = Matrix.subtract(pred, trainy);
-        net.backprop(trainError, LR);
+        if(iter.value % UPDATE_INTERVAL == 0){
+            List<double[][]> batch = rm.sample(BATCH_SIZE);
+            double[][] trainX = batch.get(0);
+            double[][] trainy = batch.get(1);
+            double[][] pred = net.forward(trainX);
+            double[][] trainError = Matrix.subtract(pred, trainy);
+            net.backprop(trainError, LR);
+        }
 
-
-        // Print learning statistics - on every nth iteration
-        stats.addError(error);
-        stats.addWeights(net);
-        stats.addLearningRate(LR);
-        stats.flush();
+        if(iter.value % STAT_INTERVAL == 0){
+            // Print learning statistics - on every nth iteration
+            double error = (evalScore(SAP) - trueScore);
+            stats.addError(error);
+            stats.addWeights(net);
+            stats.addLearningRate(LR);
+            stats.flush();
+        }
 
         // Update Persistent Parameters
         iter.value++;

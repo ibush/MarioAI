@@ -91,7 +91,7 @@ public boolean runSingleEpisode(final int repetitionsOfSingleEpisode, boolean ou
     long c = System.currentTimeMillis();
     for (int r = 0; r < repetitionsOfSingleEpisode; ++r)
     {
-        //System.out.println("Iteration : " + Integer.toString(r));
+        System.out.println("Iteration : " + Integer.toString(r));
         this.reset();
         while (!environment.isLevelFinished())
         {
