@@ -17,11 +17,15 @@ public class NNStats {
     private HashMap<String, double[]> weightStore;
     private HashMap<String, Double> metricStore;
 
+    private HashMap<String,double[][]> prevWeights;
+
     public NNStats(String AgentName){
         this.AgentName = AgentName;
 
+        prevWeights = new HashMap<String, double[][]>();
         weightStore = new HashMap<String, double[]>();
         metricStore = new HashMap<String, Double>();
+
 
         try {
             metricWriter = new PrintWriter("stats/NNmetrics_" + this.AgentName, "UTF-8");
@@ -44,6 +48,11 @@ public class NNStats {
         for(Layer layer : layers) {
             double[][] weights = layer.getWeights();
             weightStore.put(layer.getName(), calcMatStats(weights));
+            if(prevWeights.containsKey(layer.getName())){
+                double[][] prev = prevWeights.get(layer.getName());
+                metricStore.put(layer.getName(), calcDiff(prev, weights));
+            }
+            prevWeights.put(layer.getName(), weights);
         }
     }
 
@@ -66,6 +75,17 @@ public class NNStats {
 
         metricStore.clear();
         weightStore.clear();
+    }
+
+    // Calculate the change in two weight matrices
+    private double calcDiff(double[][] prev, double[][] curr){
+        double diff = 0;
+        for(int i = 0; i < prev.length; i++){
+            for(int j = 0; j < prev[0].length; j++){
+                diff += Math.abs(prev[i][j] - curr[i][j]);
+            }
+        }
+        return diff;
     }
 
     private double[] calcMatStats(double[][] mat) {

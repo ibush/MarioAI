@@ -28,8 +28,11 @@ public class NNAgent extends QAgent implements Agent{
     private final static int H1_SIZE = 50;
     private final static int H2_SIZE = 50;
     private final static double REG = 0.01; // regularization not yet implemented
-    private final static double LR = 0.01 / BATCH_SIZE;
+    private static double LR = 0.01 / BATCH_SIZE;
+    private final static int DECAY_STEP = 20000;
+    private final static double DECAY_FACTOR = 0.5;
 
+    private final static boolean TEST_TIME = false; // no learning at test time
 
     private int numFeatures;
     protected HashMap hparams;
@@ -136,8 +139,17 @@ public class NNAgent extends QAgent implements Agent{
         double trueScore = reward + DISCOUNT * succBestScore;
         rm.addMemory(extractFeatures(SAP)[0], trueScore);
 
-        // only do this update on every n-th iteration
-        if(iter.value % UPDATE_INTERVAL == 0){
+        // Annealed learning rate and epsilon greedy
+        if(iter.value % DECAY_STEP == 0 && !TEST_TIME){
+            LR = LR * DECAY_FACTOR;
+            //RANDOM_ACTION_EPSILON = RANDOM_ACTION_EPSILON * DECAY_FACTOR;
+            System.out.println("Decay Step - LR : " + Double.toString(LR)
+                    + " Epsilon : " + Double.toString(RANDOM_ACTION_EPSILON));
+        }
+
+
+            // only do this update on every n-th iteration
+        if(iter.value % UPDATE_INTERVAL == 0 && !TEST_TIME){
             List<double[][]> batch = rm.sample(BATCH_SIZE);
             double[][] trainX = batch.get(0);
             double[][] trainy = batch.get(1);
@@ -146,7 +158,7 @@ public class NNAgent extends QAgent implements Agent{
             net.backprop(trainError, LR);
         }
 
-        if(iter.value % STAT_INTERVAL == 0){
+        if(iter.value % STAT_INTERVAL == 0 && !TEST_TIME){
             // Print learning statistics - on every nth iteration
             double error = (evalScore(SAP) - trueScore);
             stats.addError(error);
