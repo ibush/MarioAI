@@ -28,7 +28,7 @@ public class NNAgent extends QAgent implements Agent{
     private final static int H1_SIZE = 50;
     private final static int H2_SIZE = 50;
     private final static double REG = 0.01; // regularization not yet implemented
-    private final static double LR = 0.01;
+    private final static double LR = 0.01 / BATCH_SIZE;
 
 
     private int numFeatures;

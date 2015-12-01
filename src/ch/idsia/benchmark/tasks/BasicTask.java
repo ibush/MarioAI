@@ -89,9 +89,16 @@ public boolean runSingleEpisode(final int repetitionsOfSingleEpisode, boolean ou
         }
     }
     long c = System.currentTimeMillis();
+    long startTime = 0;
+    long endTime = 0;
+    long runtime = 0;
     for (int r = 0; r < repetitionsOfSingleEpisode; ++r)
     {
-        System.out.println("Iteration : " + Integer.toString(r));
+        endTime = System.currentTimeMillis();
+        runtime = (endTime - startTime) / 1000;
+        System.out.println("Iteration : " + Integer.toString(r) + " runtime : " + Long.toString(runtime));
+        startTime = System.currentTimeMillis();
+
         this.reset();
         while (!environment.isLevelFinished())
         {
@@ -136,6 +143,17 @@ public boolean runSingleEpisode(final int repetitionsOfSingleEpisode, boolean ou
             distance.flush();
         }
 
+        if (agent instanceof QAgent) {
+            //Save params to file
+            try {
+                ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("params/params_" + agent.getName()));
+                out.writeObject(learnedParams);
+                out.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+                System.out.println("Could not write params to file");
+            }
+        }
         //System.out.println(Arrays.toString((double[])learnedParams.get("weights")));
     }
 
