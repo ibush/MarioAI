@@ -1,13 +1,14 @@
-package cs221.neuralnetwork;
+package cs221;
 
-import cs221.Matrix;
+import cs221.neuralnetwork.Layer;
+import cs221.neuralnetwork.NeuralNet;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 
-public class NNStats {
+public class Stats {
 
     private String AgentName;
     private PrintWriter weightWriter;
@@ -19,7 +20,7 @@ public class NNStats {
 
     private HashMap<String,double[][]> prevWeights;
 
-    public NNStats(String AgentName){
+    public Stats(String AgentName){
         this.AgentName = AgentName;
 
         prevWeights = new HashMap<String, double[][]>();
@@ -28,8 +29,8 @@ public class NNStats {
 
 
         try {
-            metricWriter = new PrintWriter("stats/NNmetrics_" + this.AgentName, "UTF-8");
-            weightWriter = new PrintWriter("stats/NNweights_" + this.AgentName, "UTF-8");
+            metricWriter = new PrintWriter("stats/metrics_" + this.AgentName, "UTF-8");
+            weightWriter = new PrintWriter("stats/weights_" + this.AgentName, "UTF-8");
         } catch (Exception e) {
             System.out.println("File Could not be opened");
         }
@@ -43,17 +44,26 @@ public class NNStats {
         metricStore.put("error", error);
     }
 
+    public void addWeights(double[] weights) {
+        double[][] weightsMatrix = {weights};
+        storeWeights(AgentName, weightsMatrix);
+    }
+
     public void addWeights(NeuralNet net){
         ArrayList<Layer> layers = net.getLayers();
         for(Layer layer : layers) {
             double[][] weights = layer.getWeights();
-            weightStore.put(layer.getName(), calcMatStats(weights));
-            if(prevWeights.containsKey(layer.getName())){
-                double[][] prev = prevWeights.get(layer.getName());
-                metricStore.put(layer.getName(), calcDiff(prev, weights));
-            }
-            prevWeights.put(layer.getName(), weights);
+            storeWeights(layer.getName(), weights);
         }
+    }
+
+    private void storeWeights(String name, double[][] weights) {
+        weightStore.put(name, calcMatStats(weights));
+        if(prevWeights.containsKey(name)){
+            double[][] prev = prevWeights.get(name);
+            metricStore.put(name + "_weightDiff", calcDiff(prev, weights));
+        }
+        prevWeights.put(name, weights);
     }
 
     public void flush(){

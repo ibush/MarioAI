@@ -46,7 +46,7 @@ public class NNAgent extends QAgent implements Agent{
     private ArrayList<boolean[]> possibleActions;
 
     private NeuralNet net;
-    private NNStats stats;
+    private Stats stats;
 
     // Persistent Objects
     private ReplayMemory rm;
@@ -57,7 +57,7 @@ public class NNAgent extends QAgent implements Agent{
         super("NNAgent");
         hparams = new HashMap<String,Double>();
         learnedParams = new HashMap<Integer,Object>();
-        stats = new NNStats(name);
+        stats = new Stats(name);
 
         reset();
     }

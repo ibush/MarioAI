@@ -78,12 +78,10 @@ public boolean runSingleEpisode(final int repetitionsOfSingleEpisode, boolean ou
 {
     PrintWriter fitnessScores = null;
     PrintWriter distance = null;
-    PrintWriter weightsStats = null;
     if(outputToFile) {
         try {
             fitnessScores = new PrintWriter("stats/fitnessScores_" + agent.getName(), "UTF-8");
             distance = new PrintWriter("stats/distance_" + agent.getName(), "UTF-8");
-            if(agent instanceof QLinearAgent) weightsStats = new PrintWriter("stats/weightsStats_" + agent.getName(), "UTF-8");
         } catch (Exception e) {
             System.out.println("Could not open output files");
         }
@@ -123,11 +121,6 @@ public boolean runSingleEpisode(final int repetitionsOfSingleEpisode, boolean ou
                 if(agent instanceof QAgent ) {
                     learnedParams = ((QAgent)agent).getLearnedParams();
                 }
-                if(agent instanceof QLinearAgent) {
-                    double[] weights = (double[])learnedParams.get("weights");
-                    List weightsList = Arrays.asList(ArrayUtils.toObject(weights));
-                    weightsStats.println(Collections.min(weightsList) + "," + Collections.max(weightsList) + "," + avg(weights));
-                }
             }
         }
         environment.closeRecorder(); //recorder initialized in environment.reset
@@ -159,7 +152,6 @@ public boolean runSingleEpisode(final int repetitionsOfSingleEpisode, boolean ou
 
     if(fitnessScores != null) fitnessScores.close();
     if(distance != null) distance.close();
-    if(weightsStats != null) weightsStats.close();
     return true;
 }
 

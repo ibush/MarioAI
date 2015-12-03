@@ -20,6 +20,7 @@ public class QLinearAgent extends QAgent implements Agent {
     private final static float RANDOM_ACTION_EPSILON = (float) 0.2;
     private final static float STEP_SIZE = (float) 0.01;
     private final static float DISCOUNT = (float) 0.95;
+    private final static double LR = 0.01;
     private final static String WEIGHTS_KEY = "weights";
 
     private final static int Z_LEVEL_SCENE = 2;
@@ -37,6 +38,8 @@ public class QLinearAgent extends QAgent implements Agent {
     private Random numGenerator = new Random();
     private ArrayList<boolean[]> possibleActions;
 
+    private Stats stats;
+
 
     public QLinearAgent()
     {
@@ -44,7 +47,8 @@ public class QLinearAgent extends QAgent implements Agent {
         randomJump = RANDOM_ACTION_EPSILON;
         stepSize = STEP_SIZE;
         discount = DISCOUNT;
-        learnedParams = new HashMap<String,Float[]>();
+        learnedParams = new HashMap<String,double[]>();
+        stats = new Stats("QLinearAgent");
 
         reset();
     }
@@ -81,8 +85,9 @@ public class QLinearAgent extends QAgent implements Agent {
 
         // Update Weights
         double[] weights = (double[])learnedParams.get(WEIGHTS_KEY);
+        double error = evalScore(SAP) - reward;
 
-        double update = stepSize * (evalScore(SAP) - reward - discount * bestScore);
+        double update = stepSize * (error - discount * bestScore);
         double[] chg = Matrix.scalarMult(extractFeatures(SAP), update);
         double[] newWeights = Matrix.subtract(weights, chg);
         if(REGULARIZATION_LAMDA != 0) {
@@ -109,6 +114,11 @@ public class QLinearAgent extends QAgent implements Agent {
 
         learnedParams.put(WEIGHTS_KEY, newWeights);
         //System.out.println(Arrays.toString(newWeights));
+
+        stats.addError(error);
+        stats.addWeights(newWeights);
+        stats.addLearningRate(LR);
+        stats.flush();
 
 
 
