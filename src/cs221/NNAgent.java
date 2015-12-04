@@ -13,7 +13,6 @@ public class NNAgent extends QAgent implements Agent{
 
     // Reinforcement Learning Parameters
     private final static boolean INDICATOR_REWARDS = true;
-    private final static double RANDOM_ACTION_EPSILON = 0.2;
     private final static double DISCOUNT = 0.8;
 
     // Simulation Parameters
@@ -144,7 +143,7 @@ public class NNAgent extends QAgent implements Agent{
             LR = LR * DECAY_FACTOR;
             //RANDOM_ACTION_EPSILON = RANDOM_ACTION_EPSILON * DECAY_FACTOR;
             System.out.println("Decay Step - LR : " + Double.toString(LR)
-                    + " Epsilon : " + Double.toString(RANDOM_ACTION_EPSILON));
+                    + " Epsilon : " + Double.toString(randomJump));
         }
 
 
@@ -164,6 +163,7 @@ public class NNAgent extends QAgent implements Agent{
             stats.addError(error);
             stats.addWeights(net);
             stats.addLearningRate(LR);
+            stats.addEpsilonGreedy(randomJump);
             stats.flush();
         }
 
@@ -177,7 +177,7 @@ public class NNAgent extends QAgent implements Agent{
     public boolean[] getAction() {
 
         // Take random action with some probability
-        if(numGenerator.nextFloat() < RANDOM_ACTION_EPSILON){
+        if(numGenerator.nextFloat() < getEpsilonGreedy()){
             int randIndex = numGenerator.nextInt(possibleActions.size());
             action = possibleActions.get(randIndex);
         }

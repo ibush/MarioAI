@@ -16,6 +16,11 @@ import java.util.LinkedList;
  */
 public abstract class QAgent implements Agent{
 
+    private final static boolean DECREASING_EPSILON_GREEDY = false;
+    private final static float STATIC_EPSILON_GREEDY = 0.2f;
+    private final static int UPDATE_FREQUENCY = 50; //Number of iterations per epsilon-greedy update
+    private final static double MIN_EPSILON_GREEDY = 0.1;
+
     protected String name;
     //protected boolean[] action = new boolean[Environment.numberOfKeys];// Empty action
     protected int receptiveFieldWidth;
@@ -23,10 +28,20 @@ public abstract class QAgent implements Agent{
     protected int marioEgoRow;
     protected int marioEgoCol;
 
+    protected double randomJump;
+    private int numUpdates;
+
     protected HashMap learnedParams;
 
     public QAgent(String name){
         this.name = name;
+
+        if(DECREASING_EPSILON_GREEDY){
+            randomJump = 1;
+            numUpdates = 0;
+        } else {
+            randomJump = STATIC_EPSILON_GREEDY;
+        }
     }
 
     /**
@@ -72,6 +87,17 @@ public abstract class QAgent implements Agent{
 
         marioEgoRow = egoRow;
         marioEgoCol = egoCol;
+    }
+
+    public double getEpsilonGreedy() {
+        if(DECREASING_EPSILON_GREEDY) {
+            numUpdates++;
+            if (numUpdates % UPDATE_FREQUENCY == 0 && randomJump > MIN_EPSILON_GREEDY) {
+                randomJump = 1.0 / (Math.sqrt(numUpdates / UPDATE_FREQUENCY));
+                //System.out.println("epsilon: " + randomJump);
+            }
+        }
+        return randomJump;
     }
 
     public String getName(){

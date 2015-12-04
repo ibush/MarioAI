@@ -40,6 +40,10 @@ public class Stats {
         metricStore.put("lr",lr);
     }
 
+    public void addEpsilonGreedy(double epsilon) {
+        metricStore.put("epsilon", epsilon);
+    }
+
     public void addError(double error){
         metricStore.put("error", error);
     }

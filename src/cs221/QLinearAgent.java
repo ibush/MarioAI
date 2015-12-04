@@ -16,22 +16,18 @@ public class QLinearAgent extends QAgent implements Agent {
     private final static boolean VERBOSE = false;
     private final static boolean INDICATOR_REWARDS = true;
 
-    private final static float REGULARIZATION_LAMDA = 0.01f;
-    private final static float RANDOM_ACTION_EPSILON = (float) 0.2;
-    private final static float STEP_SIZE = (float) 0.01;
-    private final static float DISCOUNT = (float) 0.95;
-    private final static double LR = 0.01;
     private final static String WEIGHTS_KEY = "weights";
+
+    private final static float REGULARIZATION_LAMDA = 0.01f;
+    private final static float STEP_SIZE = 0.01f;
+    private final static float DISCOUNT =  0.95f;
 
     private final static int Z_LEVEL_SCENE = 2;
     private final static int Z_LEVEL_ENEMIES = 2;
 
-    private float stepSize;
-    private float discount;
     //private HashMap<int[], Float> mapping = new HashMap<int[], Float>();
-    private float randomJump;
     private Environment environment;
-    private float prevFitScore;
+    private double prevFitScore;
     private int[] state;
     private boolean[] action;
     private double bestScore;
@@ -44,9 +40,6 @@ public class QLinearAgent extends QAgent implements Agent {
     public QLinearAgent()
     {
         super("QLinearAgent");
-        randomJump = RANDOM_ACTION_EPSILON;
-        stepSize = STEP_SIZE;
-        discount = DISCOUNT;
         learnedParams = new HashMap<String,double[]>();
         stats = new Stats("QLinearAgent");
 
@@ -57,8 +50,9 @@ public class QLinearAgent extends QAgent implements Agent {
         // Get observed state vector
         int[] succState = environment.getSerializedFullObservationZZ(Z_LEVEL_SCENE, Z_LEVEL_ENEMIES);
         float currFitScore = (float) environment.getEvaluationInfo().computeBasicFitness();
-
+        //float currFitScore = (float) environment.getEvaluationInfo().computeWeightedFitness();
         integrateObservation(succState, currFitScore);
+        //integrateObservation(succState, currFitScore + environment.getIntermediateReward());
     }
 
     public void integrateObservation(int[] succState, float currFitScore) {
@@ -78,7 +72,7 @@ public class QLinearAgent extends QAgent implements Agent {
 
         StateActionPair SAP = new StateActionPair(state, action);
         boolean[] succAction = findBestAction(environment, succState);
-        float reward = currFitScore - prevFitScore;
+        double reward = currFitScore - prevFitScore;
         if(INDICATOR_REWARDS) {
             if(reward != 0) reward = reward > 0 ? 1.0f : -1.0f;
         }
@@ -87,7 +81,7 @@ public class QLinearAgent extends QAgent implements Agent {
         double[] weights = (double[])learnedParams.get(WEIGHTS_KEY);
         double error = evalScore(SAP) - reward;
 
-        double update = stepSize * (error - discount * bestScore);
+        double update = STEP_SIZE * (error - DISCOUNT * bestScore);
         double[] chg = Matrix.scalarMult(extractFeatures(SAP), update);
         double[] newWeights = Matrix.subtract(weights, chg);
         if(REGULARIZATION_LAMDA != 0) {
@@ -101,7 +95,7 @@ public class QLinearAgent extends QAgent implements Agent {
             sb.append(" Q Pred : ").append(evalScore(SAP));
             sb.append(" reward : ").append(reward);
             sb.append(" Vopt : ").append(bestScore);
-            sb.append(" DVopt : ").append(discount * bestScore);
+            sb.append(" DVopt : ").append(DISCOUNT * bestScore);
             sb.append(" Update : ").append(update);
             double temp = 0;
             for (int i = 0; i < weights.length; i++) {
@@ -117,7 +111,7 @@ public class QLinearAgent extends QAgent implements Agent {
 
         stats.addError(error);
         stats.addWeights(newWeights);
-        stats.addLearningRate(LR);
+        stats.addEpsilonGreedy(randomJump);
         stats.flush();
 
 
@@ -132,7 +126,7 @@ public class QLinearAgent extends QAgent implements Agent {
     public boolean[] getAction() {
 
         // Take random action with some probability
-        if(numGenerator.nextFloat() < randomJump){
+        if(numGenerator.nextFloat() < getEpsilonGreedy()){
             int randIndex = numGenerator.nextInt(possibleActions.size());
             action = possibleActions.get(randIndex);
         }

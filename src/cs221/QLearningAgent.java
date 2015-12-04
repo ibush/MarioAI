@@ -13,7 +13,6 @@ import java.util.Random;
  */
 public class QLearningAgent extends QAgent implements Agent{
 
-    private final static float RANDOM_ACTION_EPSILON = (float) 0.2;
     private final static float STEP_SIZE = (float) 0.1;
     private final static float DISCOUNT = (float) 1.0;
 
@@ -23,7 +22,6 @@ public class QLearningAgent extends QAgent implements Agent{
     private float stepSize;
     private float discount;
     //private HashMap<int[], Float> mapping = new HashMap<int[], Float>();
-    private float randomJump;
     private Environment environment;
     private float prevFitScore;
     private int[] state;
@@ -33,7 +31,6 @@ public class QLearningAgent extends QAgent implements Agent{
     public QLearningAgent()
     {
         super("QLearningAgent");
-        randomJump = RANDOM_ACTION_EPSILON;
         stepSize = STEP_SIZE;
         discount = DISCOUNT;
         learnedParams = new HashMap<StateActionPair,Float>();
@@ -72,7 +69,7 @@ public class QLearningAgent extends QAgent implements Agent{
     public boolean[] getAction() {
 
         // Take random action with some probability
-        if(numGenerator.nextFloat() < randomJump){
+        if(numGenerator.nextFloat() < getEpsilonGreedy()){
             ArrayList<boolean[]> allActions = getPossibleActions(environment);
             int randIndex = numGenerator.nextInt(allActions.size());
             action = allActions.get(randIndex);
