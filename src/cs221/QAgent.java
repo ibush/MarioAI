@@ -1,6 +1,7 @@
 package cs221;
 
 import ch.idsia.agents.Agent;
+import ch.idsia.benchmark.mario.engine.sprites.Mario;
 import ch.idsia.benchmark.mario.environments.Environment;
 
 import java.util.ArrayList;
@@ -51,22 +52,39 @@ public abstract class QAgent implements Agent{
      */
     public ArrayList<boolean[]> getPossibleActions(Environment env){
         ArrayList<boolean[]> result = new ArrayList<boolean[]>();
-        // Currently enumerates all action combinations without filter
-        int num = Environment.numberOfKeys;
+
+/* Comment in for hand-picked actions
+        addAction(result, new int[]{Mario.KEY_LEFT});
+        addAction(result, new int[]{Mario.KEY_RIGHT});
+        addAction(result, new int[]{Mario.KEY_JUMP});
+        addAction(result, new int[]{Mario.KEY_SPEED});
+
+        addAction(result, new int[]{Mario.KEY_RIGHT, Mario.KEY_JUMP});
+        addAction(result, new int[]{Mario.KEY_RIGHT, Mario.KEY_SPEED});
+        addAction(result, new int[]{Mario.KEY_RIGHT, Mario.KEY_JUMP, Mario.KEY_SPEED});
+*/
+
+        //All combinations of Left, Right, Jump, Speed (except simultaneous left & right)
         for(int i = 0; i < 2; i++){
             for(int j = 0; j < 2; j++){
-                for(int k = 0; k < 2; k++){
-                    for(int l = 0; l < 2; l++){
-                        for(int m = 0; m < 2; m++){
-                            for(int n = 0; n < 2; n++){
-                                result.add(new boolean[]{i!=0, j!=0, k!=0, l!=0, m!=0, n!=0});
-                            }
-                        }
+                if(i != 0 && j!= 0) continue; //Can't go left & right
+                for(int l = 0; l < 2; l++){
+                    for(int m = 0; m < 2; m++){
+                        result.add(new boolean[]{i != 0, j != 0, false, l != 0, m != 0, false}); //No up or down keys
                     }
                 }
             }
         }
+
         return(result);
+    }
+
+    private void addAction(ArrayList<boolean[]> actions, int[] indices) {
+        boolean[] action = new boolean[6];
+        for(int index : indices) {
+            action[index] = true;
+        }
+        actions.add(action);
     }
 
     public void giveIntermediateReward(float intermediateReward){
