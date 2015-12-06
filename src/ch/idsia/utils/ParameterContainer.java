@@ -106,7 +106,20 @@ private static final String[] allowed = new String[]{
         "-w", //wind
         "-ice", //ice
         "-ex", //exitX
-        "-ey" //exitY
+        "-ey", //exitY
+        "-deps", //decreasing epsilon greedy?
+        "-eps", //static epsilon greedy value (if deps False)
+        "-meps", //min epsilon greedy (if deps True)
+        "-reg", //regularization lamdba
+        "-step", //step size
+        "-dis", //discount
+        "-ind", //indicator rewards
+        "-test", //set true if testing (not learning)
+        "-batch", //NN batch size
+        "-rep", //NN replay size
+        "-h1", //NN hidden 1 size
+        "-h2", //NN hidden 2 size
+        "-lrdecay", //learning rate d
 };
 
 public ParameterContainer()
@@ -225,6 +238,16 @@ public boolean b(String s)
         throw new Error("\n[MarioAI] ~ Wrong parameter value got <" + s +
                 "> whereas expected 'on' or 'off'\n[MarioAI] ~ Execution Terminated");
 }
+    public boolean bool(String s) throws Exception
+    {
+        if ("true".equals(s))
+            return true;
+        else if ("false".equals(s))
+            return false;
+        else
+            throw new Exception("\n[MarioAI] ~ Wrong parameter value got <" + s +
+                    "> whereas expected 'on' or 'off'\n[MarioAI] ~ Execution Terminated");
+    }
 
 public static void InitDefaults()
 {

@@ -1,6 +1,7 @@
 package cs221;
 
 import ch.idsia.agents.Agent;
+import ch.idsia.benchmark.mario.engine.GlobalOptions;
 import ch.idsia.benchmark.mario.environments.Environment;
 
 import java.util.ArrayList;
@@ -14,13 +15,8 @@ import java.util.Random;
 public class QLinearAgent extends QAgent implements Agent {
 
     private final static boolean VERBOSE = false;
-    private final static boolean INDICATOR_REWARDS = true;
 
     private final static String WEIGHTS_KEY = "weights";
-
-    private final static float REGULARIZATION_LAMDA = 0.01f;
-    private final static float STEP_SIZE = 0.01f;
-    private final static float DISCOUNT =  0.95f;
 
     private final static int Z_LEVEL_SCENE = 2;
     private final static int Z_LEVEL_ENEMIES = 2;
@@ -73,7 +69,7 @@ public class QLinearAgent extends QAgent implements Agent {
         StateActionPair SAP = new StateActionPair(state, action);
         boolean[] succAction = findBestAction(environment, succState);
         double reward = currFitScore - prevFitScore;
-        if(INDICATOR_REWARDS) {
+        if(GlobalOptions.useIndicatorRewards) {
             if(reward != 0) reward = reward > 0 ? 1.0f : -1.0f;
         }
 
@@ -81,11 +77,11 @@ public class QLinearAgent extends QAgent implements Agent {
         double[] weights = (double[])learnedParams.get(WEIGHTS_KEY);
         double error = evalScore(SAP) - reward;
 
-        double update = STEP_SIZE * (error - DISCOUNT * bestScore);
+        double update = GlobalOptions.stepSize * (error - GlobalOptions.dicount * bestScore);
         double[] chg = Matrix.scalarMult(extractFeatures(SAP), update);
         double[] newWeights = Matrix.subtract(weights, chg);
-        if(REGULARIZATION_LAMDA != 0) {
-            double[] regularization = Matrix.scalarMult(weights, REGULARIZATION_LAMDA);
+        if(GlobalOptions.regularizationLamda != 0) {
+            double[] regularization = Matrix.scalarMult(weights, GlobalOptions.regularizationLamda);
             newWeights = Matrix.subtract(newWeights,regularization);
         }
 
@@ -95,7 +91,7 @@ public class QLinearAgent extends QAgent implements Agent {
             sb.append(" Q Pred : ").append(evalScore(SAP));
             sb.append(" reward : ").append(reward);
             sb.append(" Vopt : ").append(bestScore);
-            sb.append(" DVopt : ").append(DISCOUNT * bestScore);
+            sb.append(" DVopt : ").append(GlobalOptions.dicount * bestScore);
             sb.append(" Update : ").append(update);
             double temp = 0;
             for (int i = 0; i < weights.length; i++) {

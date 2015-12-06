@@ -83,6 +83,49 @@ public void setUpOptions(String[] args)
 //    GlobalOptions.isPauseWorld = isPauseWorld();
     GlobalOptions.isPowerRestoration = isPowerRestoration();
 //        GlobalOptions.isTimer = isTimer();
+    setQLearningParams();
+}
+
+public void setQLearningParams() {
+    try{
+        GlobalOptions.decreasingEpsilonGreedy = bool(getParameterValue("-deps"));
+    } catch(Exception ignored) {}
+    try{
+        GlobalOptions.staticEpsilonGreedy = f(getParameterValue("-eps"));
+    } catch(Exception ignored) {}
+    try{
+        GlobalOptions.minEpsilonGreedy = f(getParameterValue("-meps"));
+    } catch(Exception ignored) {}
+    try{
+        GlobalOptions.regularizationLamda = f(getParameterValue("-reg"));
+    } catch(Exception ignored) {}
+    try{
+        GlobalOptions.stepSize = f(getParameterValue("-step"));
+    } catch(Exception ignored) {}
+    try{
+        GlobalOptions.dicount = f(getParameterValue("-dis"));
+    } catch(Exception ignored) {}
+    try{
+        GlobalOptions.useIndicatorRewards = bool(getParameterValue("-ind"));
+    } catch(Exception ignored) {}
+    try{
+        GlobalOptions.testTime = bool(getParameterValue("-test"));
+    } catch(Exception ignored) {}
+    try{
+        GlobalOptions.batchSize = i(getParameterValue("-batch"));
+    } catch(Exception ignored) {}
+    try{
+        GlobalOptions.replaySize = i(getParameterValue("-rep"));
+    } catch(Exception ignored) {}
+    try{
+        GlobalOptions.h1Size = i(getParameterValue("-h1"));
+    } catch(Exception ignored) {}
+    try{
+        GlobalOptions.h2Size = i(getParameterValue("-h2"));
+    } catch(Exception ignored) {}
+    try{
+        GlobalOptions.decayFactor = f(getParameterValue("-lrdecay"));
+    } catch(Exception ignored) {}
 }
 
 public boolean isExitProgramWhenFinished()

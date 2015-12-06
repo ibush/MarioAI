@@ -1,8 +1,10 @@
 package cs221;
 
 import ch.idsia.agents.Agent;
+import ch.idsia.benchmark.mario.engine.GlobalOptions;
 import ch.idsia.benchmark.mario.engine.sprites.Mario;
 import ch.idsia.benchmark.mario.environments.Environment;
+import ch.idsia.tools.MarioAIOptions;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,10 +19,7 @@ import java.util.LinkedList;
  */
 public abstract class QAgent implements Agent{
 
-    private final static boolean DECREASING_EPSILON_GREEDY = false;
-    private final static float STATIC_EPSILON_GREEDY = 0.2f;
     private final static int UPDATE_FREQUENCY = 50; //Number of iterations per epsilon-greedy update
-    private final static double MIN_EPSILON_GREEDY = 0.1;
 
     protected String name;
     //protected boolean[] action = new boolean[Environment.numberOfKeys];// Empty action
@@ -37,11 +36,11 @@ public abstract class QAgent implements Agent{
     public QAgent(String name){
         this.name = name;
 
-        if(DECREASING_EPSILON_GREEDY){
+        if(GlobalOptions.decreasingEpsilonGreedy){
             randomJump = 1;
             numUpdates = 0;
         } else {
-            randomJump = STATIC_EPSILON_GREEDY;
+            randomJump = GlobalOptions.staticEpsilonGreedy;
         }
     }
 
@@ -108,9 +107,9 @@ public abstract class QAgent implements Agent{
     }
 
     public double getEpsilonGreedy() {
-        if(DECREASING_EPSILON_GREEDY) {
+        if(GlobalOptions.decreasingEpsilonGreedy) {
             numUpdates++;
-            if (numUpdates % UPDATE_FREQUENCY == 0 && randomJump > MIN_EPSILON_GREEDY) {
+            if (numUpdates % UPDATE_FREQUENCY == 0 && randomJump > GlobalOptions.minEpsilonGreedy) {
                 randomJump = 1.0 / (Math.sqrt(numUpdates / UPDATE_FREQUENCY));
                 //System.out.println("epsilon: " + randomJump);
             }

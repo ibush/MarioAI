@@ -1,5 +1,6 @@
 package cs221;
 
+import ch.idsia.benchmark.mario.engine.GlobalOptions;
 import ch.idsia.benchmark.mario.environments.Environment;
 import ch.idsia.agents.Agent;
 import cs221.neuralnetwork.*;
@@ -11,10 +12,6 @@ import java.util.*;
  */
 public class NNAgent extends QAgent implements Agent{
 
-    // Reinforcement Learning Parameters
-    private final static boolean INDICATOR_REWARDS = true;
-    private final static double DISCOUNT = 0.8;
-
     // Simulation Parameters
     private final static int Z_LEVEL_SCENE = 2;
     private final static int Z_LEVEL_ENEMIES = 2;
@@ -22,14 +19,8 @@ public class NNAgent extends QAgent implements Agent{
     // Neural Network Parameters
     private final static int STAT_INTERVAL = 20;
     private final static int UPDATE_INTERVAL = 20;
-    private final static int BATCH_SIZE = 50;
-    private final static int REPLAY_SIZE = 5000;
-    private final static int H1_SIZE = 50;
-    private final static int H2_SIZE = 50;
-    private final static double REG = 0.01; // regularization not yet implemented
-    private static double LR = 0.01 / BATCH_SIZE;
+    private static double LR = 0.01 / GlobalOptions.batchSize;
     private final static int DECAY_STEP = 20000;
-    private final static double DECAY_FACTOR = 0.5;
 
     private final static boolean TEST_TIME = false; // no learning at test time
 
@@ -93,7 +84,7 @@ public class NNAgent extends QAgent implements Agent{
                 System.out.println("Starting Simulation at iteration : " + Integer.toString(iter.value));
             }else{
                 // If this is the first observation of the simulation/trials
-                rm = new ReplayMemory(REPLAY_SIZE);
+                rm = new ReplayMemory(GlobalOptions.replaySize);
                 weights = new HashMap<String, double[][]>();
                 iter = new Iteration(1);
                 learnedParams.put("weights", weights);
@@ -109,13 +100,13 @@ public class NNAgent extends QAgent implements Agent{
                 // Network Architecture
                 List<LayerSpec> layerSpecs = new ArrayList<LayerSpec>();
                 //Layer 1:
-                layerSpecs.add(new LayerSpec(LayerFactory.TYPE_FULLY_CONNECTED, numFeatures, H1_SIZE));
-                layerSpecs.add(new LayerSpec(LayerFactory.TYPE_RELU, BATCH_SIZE,H1_SIZE));
+                layerSpecs.add(new LayerSpec(LayerFactory.TYPE_FULLY_CONNECTED, numFeatures, GlobalOptions.h1Size));
+                layerSpecs.add(new LayerSpec(LayerFactory.TYPE_RELU, GlobalOptions.batchSize, GlobalOptions.h1Size));
                 //Layer 2:
-                layerSpecs.add(new LayerSpec(LayerFactory.TYPE_FULLY_CONNECTED, H1_SIZE, H2_SIZE));
-                layerSpecs.add(new LayerSpec(LayerFactory.TYPE_RELU, BATCH_SIZE, H1_SIZE));
+                layerSpecs.add(new LayerSpec(LayerFactory.TYPE_FULLY_CONNECTED, GlobalOptions.h1Size, GlobalOptions.h2Size));
+                layerSpecs.add(new LayerSpec(LayerFactory.TYPE_RELU, GlobalOptions.h1Size, GlobalOptions.h2Size));
                 //Layer 3:
-                layerSpecs.add(new LayerSpec(LayerFactory.TYPE_FULLY_CONNECTED, H2_SIZE, 1));
+                layerSpecs.add(new LayerSpec(LayerFactory.TYPE_FULLY_CONNECTED, GlobalOptions.h2Size, 1));
 
                 net = new NeuralNet(layerSpecs, weights);
 
@@ -130,17 +121,17 @@ public class NNAgent extends QAgent implements Agent{
         double succBestScore = evalScore(succSAP);
 
         float reward = currFitScore - prevFitScore;
-        if(INDICATOR_REWARDS) {
+        if(GlobalOptions.useIndicatorRewards) {
             if(reward != 0) reward = reward > 0 ? 1.0f : -1.0f;
         }
 
 
-        double trueScore = reward + DISCOUNT * succBestScore;
+        double trueScore = reward + GlobalOptions.dicount * succBestScore;
         rm.addMemory(extractFeatures(SAP)[0], trueScore);
 
         // Annealed learning rate and epsilon greedy
         if(iter.value % DECAY_STEP == 0 && !TEST_TIME){
-            LR = LR * DECAY_FACTOR;
+            LR = LR * GlobalOptions.decayFactor;
             //RANDOM_ACTION_EPSILON = RANDOM_ACTION_EPSILON * DECAY_FACTOR;
             System.out.println("Decay Step - LR : " + Double.toString(LR)
                     + " Epsilon : " + Double.toString(randomJump));
@@ -149,7 +140,7 @@ public class NNAgent extends QAgent implements Agent{
 
             // only do this update on every n-th iteration
         if(iter.value % UPDATE_INTERVAL == 0 && !TEST_TIME){
-            List<double[][]> batch = rm.sample(BATCH_SIZE);
+            List<double[][]> batch = rm.sample(GlobalOptions.batchSize);
             double[][] trainX = batch.get(0);
             double[][] trainy = batch.get(1);
             double[][] pred = net.forward(trainX);

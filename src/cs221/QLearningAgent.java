@@ -1,6 +1,7 @@
 package cs221;
 
 import ch.idsia.agents.Agent;
+import ch.idsia.benchmark.mario.engine.GlobalOptions;
 import ch.idsia.benchmark.mario.environments.Environment;
 
 import java.util.ArrayList;
@@ -12,9 +13,6 @@ import java.util.Random;
  * Q Learning agent with Linear Approximation function
  */
 public class QLearningAgent extends QAgent implements Agent{
-
-    private final static float STEP_SIZE = (float) 0.1;
-    private final static float DISCOUNT = (float) 1.0;
 
     private final static int Z_LEVEL_SCENE = 2;
     private final static int Z_LEVEL_ENEMIES = 2;
@@ -31,8 +29,8 @@ public class QLearningAgent extends QAgent implements Agent{
     public QLearningAgent()
     {
         super("QLearningAgent");
-        stepSize = STEP_SIZE;
-        discount = DISCOUNT;
+        stepSize = GlobalOptions.stepSize;
+        discount = GlobalOptions.dicount;
         learnedParams = new HashMap<StateActionPair,Float>();
         reset();
     }

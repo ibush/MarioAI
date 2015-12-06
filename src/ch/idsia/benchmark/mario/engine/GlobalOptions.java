@@ -72,6 +72,24 @@ public static boolean isScale2x = false;
 public static boolean isRecording = false;
 public static boolean isReplaying = false;
 
+    // QLearning Agents Parameters
+    public static boolean decreasingEpsilonGreedy = false;
+    public static float staticEpsilonGreedy = 0.2f;
+    public static double minEpsilonGreedy = 0.1;
+    public static float regularizationLamda = 0.01f;
+    public static float stepSize = 0.01f;
+    public static float dicount =  0.95f;
+    public static boolean useIndicatorRewards = true;
+    public static boolean testTime = false; // no learning at test time
+
+    // Neural Network Parameters
+    public static int batchSize = 50;
+    public static int replaySize = 5000;
+    public static int h1Size = 50;
+    public static int h2Size = 50;
+    public static double decayFactor = 0.5;
+
+
 public static int getPrimaryVersionUID()
 {
     return primaryVersionUID;
