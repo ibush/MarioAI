@@ -1,0 +1,27 @@
+#!/bin/bash
+# Tests varying decreasing epsilon greedy
+
+cd ../bin
+#for i in {0..39}
+#do
+    for eps in 0 0.05 0.1 0.2 #min epsilon greedy
+    do
+	mkdir results/mineps_$eps
+
+	for it in 100 1000 10000 100000 #iterations per update
+	do
+
+	    mkdir params
+	    mkdir stats
+
+	    java -cp .:../lib/* ch.idsia.scenarios.Main -ag cs221.QLearningAgent -vis off -deps true -meps $eps -iteps $it
+	    java -cp .:../lib/* ch.idsia.scenarios.Main -ag cs221.QLinearAgent -vis off -deps true -meps $eps -iteps $it
+	    java -cp .:../lib/* ch.idsia.scenarios.Main -ag cs221.NNAgent -vis off -deps true -meps $eps -iteps $it
+
+	    mkdir results/mineps_$eps/it_$it
+	    mv params results/mineps_$eps/it_$it
+	    mv stats results/mineps_$eps/it_$it
+
+	done
+    done
+#done

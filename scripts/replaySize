@@ -1,0 +1,19 @@
+#!/bin/bash
+# Tests varying replay memory size
+
+cd ../bin
+#for i in {0..39}
+#do
+    for size in 1 10 50 100 500 1000 5000 10000
+    do
+        mkdir params
+        mkdir stats
+
+	java -cp .:../lib/* ch.idsia.scenarios.Main -ag cs221.NNAgent -vis off -rep $size
+
+        mkdir results/replay_size_$size
+        mv params results/replay_size_$size
+        mv stats results/replay_size_$size	
+
+    done
+#done

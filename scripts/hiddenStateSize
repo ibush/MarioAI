@@ -1,0 +1,19 @@
+#!/bin/bash
+# Tests varying hidden state size
+
+cd ../bin
+#for i in {0..39}
+#do
+    for size in 20 50 100 200 500 1000
+    do
+	mkdir params
+	mkdir stats
+
+	java -cp .:../lib/* ch.idsia.scenarios.Main -ag cs221.NNAgent -vis off -h1 $size -h2 $size
+
+	mkdir results/hidden_size_$size
+	mv params results/hidden_size_$size
+	mv stats results/hidden_size_$size
+
+    done
+#done

@@ -97,6 +97,9 @@ public void setQLearningParams() {
         GlobalOptions.minEpsilonGreedy = f(getParameterValue("-meps"));
     } catch(Exception ignored) {}
     try{
+        GlobalOptions.iterationsPerEpsUpdate = i(getParameterValue("-iteps"));
+    } catch(Exception ignored) {}
+    try{
         GlobalOptions.regularizationLamda = f(getParameterValue("-reg"));
     } catch(Exception ignored) {}
     try{

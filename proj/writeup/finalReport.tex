@@ -49,7 +49,7 @@ Outside of the official competition there have been several attempts at using re
 \label{mario_grid}
 \end{figure}
 
-We choose the Q-Learning algorithm as our approach to this problem as it enables us to learn a controller without creating a model for the game or having a fixed reward function. Our approach experiments with different Q-function approximations such as identity, linear, and neural network. Additionally we employ an epsilon greedy strategy to ensure adequate exploration of the state space by taking a random action with probability 1 - $\epsilon$. The update rule and optimal action choice are as follows, where R(s') is the reward for ending in state s' after taking action a at state s.
+We choose the Q-Learning algorithm as our approach to this problem as it enables us to learn a controller without creating a model for the game or having a known reward function. Our approach experiments with different Q-function approximations such as identity, linear, and neural network. Additionally we employ an epsilon greedy strategy to ensure adequate exploration of the state space by taking a random action with probability 1 - $\epsilon$. The update rule and optimal action choice are as follows, where R(s') is the reward for ending in state s' after taking action a at state s.
 
 \begin{align*}
 Q(s,a) &\leftarrow Q(s,a) + \alpha (R(s') + \gamma \max_{a' \in A} Q(s',a') - Q(s,a))\\

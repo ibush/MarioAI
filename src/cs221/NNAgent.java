@@ -19,7 +19,7 @@ public class NNAgent extends QAgent implements Agent{
     // Neural Network Parameters
     private final static int STAT_INTERVAL = 20;
     private final static int UPDATE_INTERVAL = 20;
-    private static double LR = 0.01 / GlobalOptions.batchSize;
+    private static double LR = GlobalOptions.stepSize / GlobalOptions.batchSize;
     private final static int DECAY_STEP = 20000;
 
     private final static boolean TEST_TIME = false; // no learning at test time
@@ -104,7 +104,7 @@ public class NNAgent extends QAgent implements Agent{
                 layerSpecs.add(new LayerSpec(LayerFactory.TYPE_RELU, GlobalOptions.batchSize, GlobalOptions.h1Size));
                 //Layer 2:
                 layerSpecs.add(new LayerSpec(LayerFactory.TYPE_FULLY_CONNECTED, GlobalOptions.h1Size, GlobalOptions.h2Size));
-                layerSpecs.add(new LayerSpec(LayerFactory.TYPE_RELU, GlobalOptions.h1Size, GlobalOptions.h2Size));
+                layerSpecs.add(new LayerSpec(LayerFactory.TYPE_RELU, GlobalOptions.batchSize, GlobalOptions.h2Size));
                 //Layer 3:
                 layerSpecs.add(new LayerSpec(LayerFactory.TYPE_FULLY_CONNECTED, GlobalOptions.h2Size, 1));
 
@@ -145,7 +145,9 @@ public class NNAgent extends QAgent implements Agent{
             double[][] trainy = batch.get(1);
             double[][] pred = net.forward(trainX);
             double[][] trainError = Matrix.subtract(pred, trainy);
-            net.backprop(trainError, LR);
+            double regError = 0.5 * GlobalOptions.regularizationLamda * net.getWeightSq();
+            trainError = Matrix.scalarAdd(trainError, regError);
+            net.backprop(trainError, LR, GlobalOptions.regularizationLamda);
         }
 
         if(iter.value % STAT_INTERVAL == 0 && !TEST_TIME){

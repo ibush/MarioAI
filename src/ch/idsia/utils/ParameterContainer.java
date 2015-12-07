@@ -107,13 +107,15 @@ private static final String[] allowed = new String[]{
         "-ice", //ice
         "-ex", //exitX
         "-ey", //exitY
+
         "-deps", //decreasing epsilon greedy?
         "-eps", //static epsilon greedy value (if deps False)
         "-meps", //min epsilon greedy (if deps True)
+        "-iteps", //iterations per epsilon greedy update
         "-reg", //regularization lamdba
         "-step", //step size
         "-dis", //discount
-        "-ind", //indicator rewards
+        "-ind", //indicator rewards?
         "-test", //set true if testing (not learning)
         "-batch", //NN batch size
         "-rep", //NN replay size
