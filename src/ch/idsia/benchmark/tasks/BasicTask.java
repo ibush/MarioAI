@@ -35,6 +35,7 @@ import ch.idsia.tools.EvaluationInfo;
 import ch.idsia.tools.MarioAIOptions;
 import ch.idsia.utils.statistics.StatisticalSummary;
 import cs221.QAgent;
+import cs221.QLearningAgent;
 import cs221.QLinearAgent;
 import org.apache.commons.lang3.ArrayUtils;
 
@@ -107,6 +108,9 @@ public boolean runSingleEpisode(final int repetitionsOfSingleEpisode, boolean ou
             {
                 c = System.nanoTime();
                 if(agent instanceof QAgent ) ((QAgent)agent).setLearnedParams(learnedParams);
+                if(agent instanceof QLearningAgent && r > QLearningAgent.MAX_LEARNING_RUNS)
+                    ((QLearningAgent)agent).learning = false;
+
                 agent.integrateObservation(environment);
                 agent.giveIntermediateReward(environment.getIntermediateReward());
 

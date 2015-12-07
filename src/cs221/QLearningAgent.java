@@ -17,6 +17,9 @@ public class QLearningAgent extends QAgent implements Agent{
     private final static int Z_LEVEL_SCENE = 2;
     private final static int Z_LEVEL_ENEMIES = 2;
 
+    public static final int MAX_LEARNING_RUNS = 200; //Runs out of memory after this
+    public boolean learning = true;
+
     private float stepSize;
     private float discount;
     //private HashMap<int[], Float> mapping = new HashMap<int[], Float>();
@@ -54,8 +57,10 @@ public class QLearningAgent extends QAgent implements Agent{
         StateActionPair succSAP = new StateActionPair(succState, succAction);
         float reward = currFitScore - prevFitScore;
 
-        Float newScore = (1 - stepSize) * evalScore(SAP) + stepSize * (reward + discount * evalScore(succSAP));
-        learnedParams.put(SAP, newScore);
+        if(learning) {
+            Float newScore = (1 - stepSize) * evalScore(SAP) + stepSize * (reward + discount * evalScore(succSAP));
+            learnedParams.put(SAP, newScore);
+        }
 
         // Update Persistent Parameters
         state = succState;
