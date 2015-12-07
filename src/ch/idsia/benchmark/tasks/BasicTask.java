@@ -89,12 +89,17 @@ public boolean runSingleEpisode(final int repetitionsOfSingleEpisode, boolean ou
             System.out.println("Could not open output files");
         }
     }
+    if(agent instanceof QAgent ) ((QAgent)agent).setLearnedParams(learnedParams);
+
     long c = 0;
     long startTime = 0;
     long endTime = 0;
     long runtime = 0;
     for (int r = 0; r < repetitionsOfSingleEpisode; ++r)
     {
+        if(agent instanceof QLearningAgent && r > QLearningAgent.MAX_LEARNING_RUNS)
+            ((QLearningAgent)agent).learning = false;
+
         endTime = System.currentTimeMillis();
         runtime = (endTime - startTime) / 1000;
         System.out.println("Iteration : " + Integer.toString(r) + " runtime : " + Long.toString(runtime));
@@ -107,9 +112,6 @@ public boolean runSingleEpisode(final int repetitionsOfSingleEpisode, boolean ou
             if (!GlobalOptions.isGameplayStopped)
             {
                 c = System.nanoTime();
-                if(agent instanceof QAgent ) ((QAgent)agent).setLearnedParams(learnedParams);
-                if(agent instanceof QLearningAgent && r > QLearningAgent.MAX_LEARNING_RUNS)
-                    ((QLearningAgent)agent).learning = false;
 
                 agent.integrateObservation(environment);
                 agent.giveIntermediateReward(environment.getIntermediateReward());
@@ -121,18 +123,15 @@ public boolean runSingleEpisode(final int repetitionsOfSingleEpisode, boolean ou
                     return false;
                 }
                 */
-
+/*
                 if(compTime != null){
                     compTime.println(System.nanoTime() - c);
                     compTime.flush();
                 }
-
+*/
 //               System.out.println("action = " + Arrays.toString(action));
 //            environment.setRecording(GlobalOptions.isRecording);
                 environment.performAction(action);
-                if(agent instanceof QAgent ) {
-                    learnedParams = ((QAgent)agent).getLearnedParams();
-                }
             }
         }
         environment.closeRecorder(); //recorder initialized in environment.reset
@@ -149,6 +148,7 @@ public boolean runSingleEpisode(final int repetitionsOfSingleEpisode, boolean ou
         }
 
         if (agent instanceof QAgent) {
+            learnedParams = ((QAgent)agent).getLearnedParams();
             //Save params to file
             try {
                 ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("params/params_" + agent.getName()));

@@ -2,13 +2,11 @@ package cs221;
 
 import ch.idsia.agents.Agent;
 import ch.idsia.benchmark.mario.engine.GlobalOptions;
-import ch.idsia.benchmark.mario.engine.sprites.Mario;
 import ch.idsia.benchmark.mario.environments.Environment;
-import ch.idsia.tools.MarioAIOptions;
+import cs221.neuralnetwork.Iteration;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 
 //import java.util.Random;
 
@@ -27,19 +25,12 @@ public abstract class QAgent implements Agent{
     protected int marioEgoCol;
 
     protected double randomJump;
-    private int numUpdates;
+    private Iteration iter;
 
     protected HashMap learnedParams;
 
     public QAgent(String name){
         this.name = name;
-
-        if(GlobalOptions.decreasingEpsilonGreedy){
-            randomJump = 1;
-            numUpdates = 0;
-        } else {
-            randomJump = GlobalOptions.staticEpsilonGreedy;
-        }
     }
 
     /**
@@ -106,9 +97,10 @@ public abstract class QAgent implements Agent{
 
     public double getEpsilonGreedy() {
         if(GlobalOptions.decreasingEpsilonGreedy) {
-            numUpdates++;
-            if (numUpdates % GlobalOptions.iterationsPerEpsUpdate == 0 && randomJump > GlobalOptions.minEpsilonGreedy) {
-                randomJump = 1.0 / (Math.sqrt(numUpdates / GlobalOptions.iterationsPerEpsUpdate));
+            iter.value++;
+            if (iter.value % GlobalOptions.iterationsPerEpsUpdate == 0 && randomJump > GlobalOptions.minEpsilonGreedy) {
+                randomJump = 1.0 / (Math.sqrt(iter.value / GlobalOptions.iterationsPerEpsUpdate));
+                if(randomJump < GlobalOptions.minEpsilonGreedy) randomJump = GlobalOptions.minEpsilonGreedy;
                 //System.out.println("epsilon: " + randomJump);
             }
         }
@@ -129,5 +121,19 @@ public abstract class QAgent implements Agent{
 
     public void setLearnedParams(HashMap learnedParams){
         this.learnedParams = learnedParams;
+
+        if(GlobalOptions.decreasingEpsilonGreedy){
+            if(learnedParams.containsKey("iter")) {
+                iter = (Iteration) learnedParams.get("iter");
+                randomJump = 1.0 / (Math.sqrt(iter.value / GlobalOptions.iterationsPerEpsUpdate));
+                if(randomJump < GlobalOptions.minEpsilonGreedy) randomJump = GlobalOptions.minEpsilonGreedy;
+            } else {
+                iter = new Iteration(0);
+                learnedParams.put("iter", iter);
+                randomJump = 1.0;
+            }
+        } else {
+            randomJump = GlobalOptions.staticEpsilonGreedy;
+        }
     }
 }
