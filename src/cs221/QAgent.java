@@ -19,8 +19,6 @@ import java.util.LinkedList;
  */
 public abstract class QAgent implements Agent{
 
-    private final static int UPDATE_FREQUENCY = 50; //Number of iterations per epsilon-greedy update
-
     protected String name;
     //protected boolean[] action = new boolean[Environment.numberOfKeys];// Empty action
     protected int receptiveFieldWidth;
@@ -109,8 +107,8 @@ public abstract class QAgent implements Agent{
     public double getEpsilonGreedy() {
         if(GlobalOptions.decreasingEpsilonGreedy) {
             numUpdates++;
-            if (numUpdates % UPDATE_FREQUENCY == 0 && randomJump > GlobalOptions.minEpsilonGreedy) {
-                randomJump = 1.0 / (Math.sqrt(numUpdates / UPDATE_FREQUENCY));
+            if (numUpdates % GlobalOptions.iterationsPerEpsUpdate == 0 && randomJump > GlobalOptions.minEpsilonGreedy) {
+                randomJump = 1.0 / (Math.sqrt(numUpdates / GlobalOptions.iterationsPerEpsUpdate));
                 //System.out.println("epsilon: " + randomJump);
             }
         }

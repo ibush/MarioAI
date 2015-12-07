@@ -78,15 +78,17 @@ public boolean runSingleEpisode(final int repetitionsOfSingleEpisode, boolean ou
 {
     PrintWriter fitnessScores = null;
     PrintWriter distance = null;
+    PrintWriter compTime = null;
     if(outputToFile) {
         try {
             fitnessScores = new PrintWriter("stats/fitnessScores_" + agent.getName(), "UTF-8");
             distance = new PrintWriter("stats/distance_" + agent.getName(), "UTF-8");
+            compTime = new PrintWriter("stats/time_" + agent.getName(), "UTF-8");
         } catch (Exception e) {
             System.out.println("Could not open output files");
         }
     }
-    long c = System.currentTimeMillis();
+    long c = 0;
     long startTime = 0;
     long endTime = 0;
     long runtime = 0;
@@ -103,7 +105,7 @@ public boolean runSingleEpisode(final int repetitionsOfSingleEpisode, boolean ou
             environment.tick();
             if (!GlobalOptions.isGameplayStopped)
             {
-                c = System.currentTimeMillis();
+                c = System.nanoTime();
                 if(agent instanceof QAgent ) ((QAgent)agent).setLearnedParams(learnedParams);
                 agent.integrateObservation(environment);
                 agent.giveIntermediateReward(environment.getIntermediateReward());
@@ -115,6 +117,12 @@ public boolean runSingleEpisode(final int repetitionsOfSingleEpisode, boolean ou
                     return false;
                 }
                 */
+
+                if(compTime != null){
+                    compTime.println(System.nanoTime() - c);
+                    compTime.flush();
+                }
+
 //               System.out.println("action = " + Arrays.toString(action));
 //            environment.setRecording(GlobalOptions.isRecording);
                 environment.performAction(action);

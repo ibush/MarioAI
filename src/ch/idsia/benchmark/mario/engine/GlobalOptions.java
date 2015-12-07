@@ -76,8 +76,9 @@ public static boolean isReplaying = false;
     public static boolean decreasingEpsilonGreedy = false;
     public static float staticEpsilonGreedy = 0.2f;
     public static double minEpsilonGreedy = 0.1;
+    public static int iterationsPerEpsUpdate = 50;
     public static float regularizationLamda = 0.01f;
-    public static float stepSize = 0.01f;
+    public static float stepSize = 0.01f; //Learning rate
     public static float dicount =  0.95f;
     public static boolean useIndicatorRewards = true;
     public static boolean testTime = false; // no learning at test time
@@ -85,8 +86,8 @@ public static boolean isReplaying = false;
     // Neural Network Parameters
     public static int batchSize = 50;
     public static int replaySize = 5000;
-    public static int h1Size = 50;
-    public static int h2Size = 50;
+    public static int h1Size = 100;
+    public static int h2Size = 100;
     public static double decayFactor = 0.5;
 
 

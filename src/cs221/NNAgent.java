@@ -104,7 +104,7 @@ public class NNAgent extends QAgent implements Agent{
                 layerSpecs.add(new LayerSpec(LayerFactory.TYPE_RELU, GlobalOptions.batchSize, GlobalOptions.h1Size));
                 //Layer 2:
                 layerSpecs.add(new LayerSpec(LayerFactory.TYPE_FULLY_CONNECTED, GlobalOptions.h1Size, GlobalOptions.h2Size));
-                layerSpecs.add(new LayerSpec(LayerFactory.TYPE_RELU, GlobalOptions.h1Size, GlobalOptions.h2Size));
+                layerSpecs.add(new LayerSpec(LayerFactory.TYPE_RELU, GlobalOptions.batchSize, GlobalOptions.h2Size));
                 //Layer 3:
                 layerSpecs.add(new LayerSpec(LayerFactory.TYPE_FULLY_CONNECTED, GlobalOptions.h2Size, 1));
 

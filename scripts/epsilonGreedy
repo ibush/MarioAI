@@ -1,0 +1,20 @@
+#!/bin/bash
+# Tests varying static epsilon greedy
+
+cd ../bin
+#for i in {0..39}
+#do
+    for eps in 0.05 0.1 0.15 0.2 0.25 0.3 0.35 0.4
+    do
+	mkdir params
+	mkdir stats
+
+	java -cp .:../lib/* ch.idsia.scenarios.Main -ag cs221.QLearningAgent -vis off -eps $eps
+	java -cp .:../lib/* ch.idsia.scenarios.Main -ag cs221.QLinearAgent -vis off -eps $eps
+	java -cp .:../lib/* ch.idsia.scenarios.Main -ag cs221.NNAgent -vis off -eps $eps
+
+	mkdir results/eps_$eps
+	mv params results/eps_$eps
+	mv stats results/eps_$eps
+    done
+#done
