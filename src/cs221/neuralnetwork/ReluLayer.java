@@ -21,7 +21,7 @@ public class ReluLayer implements Layer {
         return Matrix.relu(input, dRelu);
     }
 
-    public double[][] backprop(double[][] doutput, double lr){
+    public double[][] backprop(double[][] doutput, double lr, double reg){
 
         double[][] result = new double[doutput.length][doutput[0].length];
         for(int i = 0; i < doutput.length; i++ ) {
@@ -34,6 +34,8 @@ public class ReluLayer implements Layer {
     }
 
     public String getName(){return(name);}
+
+    public String getType(){return "relu";}
 
     public double[][] getWeights(){return(new double[][]{{0}});}
 }

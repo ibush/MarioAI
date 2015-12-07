@@ -14,9 +14,11 @@ public interface Layer {
     public double[][] forward(double[][] input);
 
     // Back pass of NN
-    public double[][] backprop(double[][] doutput, double lr);
+    public double[][] backprop(double[][] doutput, double lr, double reg);
 
     public String getName();
+
+    public String getType();
 
     public double[][] getWeights();
 }

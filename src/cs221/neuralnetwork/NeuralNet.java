@@ -33,10 +33,26 @@ public class NeuralNet {
     }
 
     // Integrates that the previous forward call produced the given actual reward
-    public void backprop(double[][] doutput, double lr){
+    public void backprop(double[][] doutput, double lr, double reg){
         for(int i = layers.size() - 1; i >= 0; i--) {
-            doutput = layers.get(i).backprop(doutput, lr);
+            doutput = layers.get(i).backprop(doutput, lr, reg);
         }
+    }
+
+    // Use for regularization
+    public double getWeightSq(){
+        double total = 0;
+        for(Layer l : layers){
+            if(l.getType() == "fc"){
+                double[][] weights = l.getWeights();
+                for(int i = 0; i < weights.length; i++){
+                    for(int j = 0; j < weights[0].length; j++){
+                        total = total +  Math.pow(weights[i][j],2);
+                    }
+                }
+            }
+        }
+        return(total);
     }
 
     // For printing stats

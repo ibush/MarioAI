@@ -56,6 +56,15 @@ public class Matrix {
         return result;
     }
 
+    public static double[][] scalarAdd(double[][] m, double scalar){
+        double[][] result = new double[m.length][m[0].length];
+        for(int i = 0; i < m.length; i++ ) {
+            for (int j = 0; j < m[i].length; j++) {
+                result[i][j] = scalar + m[i][j];
+            }
+        }
+        return result;
+    }
 
     public static double[][] transpose(double[][] m) {
         double[][] result = new double[m[0].length][m.length];

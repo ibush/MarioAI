@@ -145,7 +145,9 @@ public class NNAgent extends QAgent implements Agent{
             double[][] trainy = batch.get(1);
             double[][] pred = net.forward(trainX);
             double[][] trainError = Matrix.subtract(pred, trainy);
-            net.backprop(trainError, LR);
+            double regError = 0.5 * GlobalOptions.regularizationLamda * net.getWeightSq();
+            trainError = Matrix.scalarAdd(trainError, regError);
+            net.backprop(trainError, LR, GlobalOptions.regularizationLamda);
         }
 
         if(iter.value % STAT_INTERVAL == 0 && !TEST_TIME){
