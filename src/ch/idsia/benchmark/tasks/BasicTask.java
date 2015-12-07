@@ -91,10 +91,10 @@ public boolean runSingleEpisode(final int repetitionsOfSingleEpisode, boolean ou
     }
     if(agent instanceof QAgent ) ((QAgent)agent).setLearnedParams(learnedParams);
 
-    long c = 0;
+    long c;
     long startTime = 0;
-    long endTime = 0;
-    long runtime = 0;
+    long endTime;
+    long runtime;
     for (int r = 0; r < repetitionsOfSingleEpisode; ++r)
     {
         if(agent instanceof QLearningAgent && r > QLearningAgent.MAX_LEARNING_RUNS)
@@ -117,20 +117,12 @@ public boolean runSingleEpisode(final int repetitionsOfSingleEpisode, boolean ou
                 agent.giveIntermediateReward(environment.getIntermediateReward());
 
                 boolean[] action = agent.getAction();
-                /*
-                if (System.currentTimeMillis() - c > COMPUTATION_TIME_BOUND) {
-                    System.out.println("Ran " + r + " episodes");
-                    return false;
-                }
-                */
-/*
+
                 if(compTime != null){
                     compTime.println(System.nanoTime() - c);
                     compTime.flush();
                 }
-*/
-//               System.out.println("action = " + Arrays.toString(action));
-//            environment.setRecording(GlobalOptions.isRecording);
+
                 environment.performAction(action);
             }
         }
