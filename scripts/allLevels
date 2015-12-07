@@ -3,7 +3,7 @@
 
 cd ../bin
 
-for i in {0..2}
+for i in {0..39}
 do
     mkdir params
     mkdir stats
