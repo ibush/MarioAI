@@ -1,6 +1,8 @@
 library(ggplot2)
 library(reshape2)
 library(dplyr)
+library(grid)
+library(scales)
 
 rm(list=ls())
 
@@ -50,7 +52,7 @@ g <- ggplot(line_data, aes(x=epoch, y=mdist, colour=agent)) + geom_line() +
   ggtitle('Learning Convergence') + labs(x='Training Epochs', y='Distance Traveled', colour='Agent')
 
 pdf(paste0(out_dir, 'dist_line.pdf'))
-plot(g)
+plot(common_format(g))
 dev.off()
 
 # Bar Graph of average
@@ -60,7 +62,7 @@ bar_data <- summarise(group_by(data_last, agent),mdist=mean(distance))
 g <- ggplot(bar_data, aes(x=agent, y=mdist)) + geom_bar(stat='identity') +
   ggtitle('Mean Distance Traveled') + labs(x='Agent', y='Distance Traveled')
 pdf(paste0(out_dir, 'dist_bar.pdf'))
-plot(g)
+plot(common_format(g))
 dev.off()
 
 #################### Plot Fitness Score ####################
