@@ -104,15 +104,27 @@ Additionally, we experiment with using a playback memory as defined in \cite{mni
 \label{agent_comp}
 \end{figure}
 
-We implemented initial versions of the Identity and Linear Approximation Agents, as well as a baseline random agent that chooses a random action at each step. Preliminary results show that both models are able to learn some of the game's goals and outperform the random agent by a large margin as shown in Figure \ref{agent_comp}.
+Our initial results comparing the different methods are shown in Figure \ref{agent_comp}. Here we use the most intuitive measure of performance, the distance travelled toward the goal within a single game. For this particular level the length of the goal is 4096, which serves as an upper bound for any individual observation.
 
-The Identity Agent was able to run for about 200 trials before running out of memory (where each trial is a full game and consists of about 1000 time-steps). At the start of learning, Mario jumps around aimlessly performing random actions. By the end of the 200 trials, the agent has learned to move forward from some states and thus makes progress. However, since there is no generalization, the agent still performs random actions from some states and the game usually ends due to time-out. 
+We can see that all agents perform significantly better than our baseline random agent. The Identity Agent was able to run for about 200 trials before running out of memory (where each trial is a full game and consists of about 1000 time-steps). At the start of learning, Mario jumps around aimlessly performing random actions. By the end of the 200 trials, the agent has learned to move forward from some states and thus makes progress. However, since there is no generalization, the agent still performs random actions from some states and the game usually ends due to time-out. 
 
-The distance travelled over the trials for the agents can be seen in the Learning Convergence graph in Figure \ref{agent_comp}. While there is much variability, the trend is positive for the Identity Agent. Over the last 50 trials, the Identity Agent travelled an average distance of 710 with an average fitness score of 1,561. This is significantly better than the baseline random agent, which travels an average distance of 127 with an average fitness score of 257.
+The distance travelled over the trials for the agents can be seen in the right graph, showing learning convergence, in Figure \ref{agent_comp}. While there is much variability, the trend is positive for the Identity Agent. Over the last 50 trials, the Identity Agent travelled an average distance of 710 with an average fitness score of 1,561. This is significantly better than the baseline random agent, which travels an average distance of 127 with an average fitness score of 257.
 
 Due to generalization of state features, the Linear Agent learns much faster than the Identity Agent, as can be seen by the higher distance travelled even during the first few training epochs. The rate is faster despite a much lower learning rate (step-size), which was needed to keep the weights from diverging. The Linear Agent is able to progress farther on average than the Identity Agent (generalizing the desire to move forward to many different states) and thus usually completes the level or dies from a monster rather than hitting the timeout. The Linear Agent travels an average distance of 2,360 with an average fitness score of 5,140, far outperforming both the random agent and Identity Agent.
 
+The performance of our neural network agent starts at the level of the linear agent in the first few epochs. However after this point it reaches another plateau at a higher average distance travelled. We can also observe that the variability of results decreases in the later epochs which is likely due to the annealed learning rate leading to a convergence of the Q function approximation.
+
 \subsection{Runtime Analysis}
+
+\begin{figure}
+\includegraphics[scale=0.5]{imgs/runtime_bar.pdf}
+\caption{Mean runtime per step by method}
+\label{runtime_bar}
+\end{figure}
+
+We plot the runtime per step in Figure \ref{runtime_bar}. A step involves the agent updating parameters as well as choosing an action. We can see that Random agent and Identity agent are very fast in choosing an action, but as we saw previously, are worst in performance. This is intuitive as the random agent does not have parameters to update and simply uses a random number generator. While the identity agent does have an update step it only does add and lookup operations.
+
+Conversely Both the neural network agent and the linear agent take a non-trivial amount of time to update. Both update and action evaluation steps for these agents require matrix multiplications. These networks however performed the best. As we can see there is a trade-off between speed of you agents and performance.
 
 \subsection{NN Parameter Tuning}
 

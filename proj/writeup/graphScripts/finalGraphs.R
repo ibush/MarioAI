@@ -16,11 +16,11 @@ src_dir  <- paste0(proj_dir, 'writeup/graphScripts/')
 source(paste0(src_dir, 'formats.R'))
 
 # hyperparameters
-epoch_size <- 10
+epoch_size <- 100
 
-qlinear_dir <- paste0(data_dir, 'QLinearAgent_2000_runs/')
-random_dir  <- paste0(data_dir, 'Random_2000_runs/')
-qlearning_dir <- paste0(data_dir, 'QLearningAgent_200_runs/')
+qlinear_dir <- paste0(data_dir, 'QLinearAgent/')
+random_dir  <- paste0(data_dir, 'RandomAgent/')
+qlearning_dir <- paste0(data_dir, 'QLearningAgent/')
 nn_dir <- paste0(data_dir, 'NNAgent/')
 
 
@@ -44,12 +44,11 @@ qlearning_agent$agent <- 'IdentityAgent'
 
 data <- rbind(qlinear_agent, random_agent, qlearning_agent, nn_agent)
 data$epoch <- floor(data$iter / epoch_size)
-data <- subset(data, epoch <= 20)
 
 # Line Graph
 line_data <- summarise(group_by(data, epoch, agent), mdist=mean(distance))
 g <- ggplot(line_data, aes(x=epoch, y=mdist, colour=agent)) + geom_line() +
-  ggtitle('Learning Convergence') + labs(x='Training Epochs', y='Distance Traveled', colour='Agent')
+  labs(x='Training Epochs', y='Distance Traveled', colour='Agent')
 
 pdf(paste0(out_dir, 'dist_line.pdf'))
 plot(common_format(g))
@@ -60,36 +59,29 @@ dev.off()
 data_last <- subset(data, epoch >= 18)
 bar_data <- summarise(group_by(data_last, agent),mdist=mean(distance))
 g <- ggplot(bar_data, aes(x=agent, y=mdist)) + geom_bar(stat='identity') +
-  ggtitle('Mean Distance Traveled') + labs(x='Agent', y='Distance Traveled')
+  labs(x='Agent', y='Distance Traveled')
 pdf(paste0(out_dir, 'dist_bar.pdf'))
 plot(common_format(g))
 dev.off()
 
-#################### Plot Fitness Score ####################
+############### Runtime Analysis ###############################
 
-measure <- 'fitnessScores'
-
-qlinear_agent <- import_data(qlinear_dir, measure,'QLinearAgent')
-random_agent <- import_data(random_dir, measure,'RandomAgent')
+measure <- 'time'
+  
+nn_agent       <- import_data(nn_dir, measure, 'NNAgent')
+qlinear_agent   <- import_data(qlinear_dir, measure,'QLinearAgent')
+random_agent    <- import_data(random_dir, measure,'RandomAgent')
 qlearning_agent <- import_data(qlearning_dir, measure,'QLearningAgent')
+qlearning_agent$agent <- 'IdentityAgent'
+  
+data <- rbind(qlinear_agent, random_agent, qlearning_agent, nn_agent)
+data <- summarise(group_by(data, agent), rt = mean(time/1000))
 
-data <- rbind(qlinear_agent, random_agent, qlearning_agent)
-data$epoch <- floor(data$iter / epoch_size)
+g <- ggplot(data, aes(x=agent, y=rt)) + geom_bar(stat='identity') +
+  labs(x='Agent',y='Runtime Per Iteation (ms)')
 
-line_data <- summarise(group_by(data, epoch, agent), fitscore=mean(fitnessScores))
-g <- ggplot(line_data, aes(x=epoch, y=fitscore, colour=agent)) + geom_line()
-
-pdf(paste0(out_dir, 'fitscore_line.pdf'))
-plot(g)
-dev.off()
-
-
-bar_data <- summarise(group_by(data, agent),fitscore=mean(fitnessScores))
-g <- ggplot(bar_data, aes(x=agent, y=fitscore)) + geom_bar(stat='identity') +
-  ggtitle('Mean Fitness Score') + labs(x='Agent', y='Fitness Score')
-
-pdf(paste0(out_dir, 'fitscore_bar.pdf'))
-plot(g)
+pdf(paste0(out_dir, 'runtime_bar.pdf'))
+plot(common_format(g))
 dev.off()
 
 ################## Parameter convergence ############################
