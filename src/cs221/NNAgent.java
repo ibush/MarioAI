@@ -20,7 +20,7 @@ public class NNAgent extends QAgent implements Agent{
     private final static int STAT_INTERVAL = 20;
     private final static int UPDATE_INTERVAL = 20;
     private static double LR = GlobalOptions.stepSize / GlobalOptions.batchSize;
-    private final static int DECAY_STEP = 20000;
+    private final static int DECAY_STEP = 200000;
 
     private final static boolean TEST_TIME = false; // no learning at test time
 
