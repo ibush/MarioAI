@@ -16,9 +16,15 @@
 \title{Super Mario Bros with Deep Reinforcement Learning}
 
 \author{
-  Matthew Chen
+  Matthew Chen\\
+  \small \vspace{-2mm} Department of Computer Science\\
+  \small \vspace{-2mm} Stanford University\\
+  \small mcc17@stanford.edu
   \and
-  Isabel Bush
+  Isabel Bush\\
+  \small \vspace{-2mm} Department of Computer Science\\
+  \small \vspace{-2mm} Stanford University\\
+  \small ibush@stanford.edu
 }
 \date{}
 \maketitle
@@ -46,7 +52,7 @@ Outside of the official competition there have been several attempts at using re
 We choose the Q-Learning algorithm as our approach to this problem as it enables us to learn a controller without creating a model for the game or having a fixed reward function. Our approach experiments with different Q-function approximations such as identity, linear, and neural network. Additionally we employ an epsilon greedy strategy to ensure adequate exploration of the state space by taking a random action with probability 1 - $\epsilon$. The update rule and optimal action choice are as follows, where R(s') is the reward for ending in state s' after taking action a at state s.
 
 \begin{align*}
-Q(s,a) &\leftarrow Q(s,a) - R(s') - \gamma \max_{a' \in A} Q(s',a')\\
+Q(s,a) &\leftarrow Q(s,a) + \alpha (R(s') + \gamma \max_{a' \in A} Q(s',a') - Q(s,a))\\
 a^* &= \argmax_{a \in A} Q(s,a)
 \end{align*}
 
@@ -58,22 +64,38 @@ The reward at each time-step is calculated as the change in fitness score over t
 
 \subsection{Identity Function}
 
-Our first learning agent maps the full state representation vector to the best action to take from that state. Since the state space is very large (the state vector has length $733$, which yields upwards of $2^{733}$ distinct states) and many states are unlikely to be seen (creating a sparse feature vector), we stored the state-action mapping in a hashmap to allow for quick access and efficient space usage. This was the strategy deployed by \cite{liao2012cs229}, except their representation of state required high-level hand-crafted features while our representation uses low-level game features.
+Our first learning agent maps the full state representation vector to the best action to take from that state. Since the state space is very large (the state vector has length $733$, which yields upwards of $2^{733}$ distinct states) and many states are unlikely to be seen (creating a sparse feature vector), we stored the state-action mapping in a hashmap to allow for quick access and efficient space usage. This was the strategy deployed by \cite{liao2012cs229}, except their representation of state required high-level hand-crafted features while our representation uses low-level game features. Below we specify the Q function and corresponding basis function which transforms a state action pair to the given state vector representation.
 
-\subsection{K Nearest Neighbours}
-Maybe implement this if there is time
+\begin{align*}
+Q(s,a) &= Lookup(\beta(s,a))\\
+\beta(s,a)_{i*j} &= 1\{ S_i = s \} * 1\{ A_j = a \}
+\end{align*}
 
 \subsection{Linear Approximation}
 
+
 Our linear agent uses the same low-level game features, but fits a linear model to estimate the value function. This model approximates the Q-function by taking a dot product between a vector of learned weights and the input features. The feature vector consists of indicator values for each element of the state vector and every possible action. This yields a feature vector of length $|stateVector| * |Actions| = 733 * 64 = 46,912$. While still large, this is much less than the identity feature vector and can easily fit in memory. And more importantly, this allows the agent to generalize to unseen states and learn more quickly.
+
+\begin{align*}
+Q(s,a) &= \theta^T \beta(s,a)\\
+\beta(s,a)_{i*j} &= 1\{ S_i = s \} * 1\{ A_j = a \}
+\end{align*}
 
 \subsection{Neural Network}
 
 Our neural network implementation has even fewer input features than the linear agent. Since state/action interactions can be exposed by the network, the input feature vector can be simplified to the state vector and an indicator for the action chosen. The features are fed through two fully-connected layers, with associated rectified linear layers, to the final fully-connected output layer which provides an estimate for the Q-function.
 
+\begin{align*}
+Q(s,a) &= ForwardPass(\theta, \beta(s, a))\\
+\beta(s,a)_{i} &= 1 \{ S_i = s \}\\
+\beta(s,a)_{|S| + j} &= 1 \{ A_j = a \}
+\end{align*}
+
 Additionally, we experiment with using a playback memory as defined in \cite{mnih2013playing}. We store the previous N observations from the game. We then sample from these observations during a single update to perform mini-batch gradient descent. This method is used to help mitigate the problem of correlated features from time windows and aid in the convergence of the weights.
 
 \section{Results}
+
+\subsection{Method Comparison}
 
 \begin{figure}
 \includegraphics[scale=0.5]{imgs/dist_bar.pdf}
@@ -90,9 +112,20 @@ The distance travelled over the trials for the agents can be seen in the Learnin
 
 Due to generalization of state features, the Linear Agent learns much faster than the Identity Agent, as can be seen by the higher distance travelled even during the first few training epochs. The rate is faster despite a much lower learning rate (step-size), which was needed to keep the weights from diverging. The Linear Agent is able to progress farther on average than the Identity Agent (generalizing the desire to move forward to many different states) and thus usually completes the level or dies from a monster rather than hitting the timeout. The Linear Agent travels an average distance of 2,360 with an average fitness score of 5,140, far outperforming both the random agent and Identity Agent.
 
+\subsection{Runtime Analysis}
+
+\subsection{NN Parameter Tuning}
+
 \section{Discussion}
 
-While this is a simple model, it has a few shortcomings. First, since this simple Q learning model maps directly from states to actions, no generalization may be made to unseen states. The best action to take from each state must be learned independently, and the agent will choose a random action for any new state (even if very similar to a past state). This makes learning slow and inefficient. Second, an implementation shortcoming of this model is that the large feature vector consisting of all possible states can overflow memory. This limits the number of learning trials that may be run as the memory-usage grows with each new state.
+We start our Q Learning agent with the identity agent which attempts to map low level features to a value. While this is a simple model, it has a few shortcomings. First, since this simple Q learning model maps directly from states to actions, no generalization may be made to unseen states. The best action to take from each state must be learned independently, and the agent will choose a random action for any new state (even if very similar to a past state). This makes learning slow and inefficient. Second, an implementation shortcoming of this model is that the large feature vector consisting of all possible states can overflow memory. This limits the number of learning trials that may be run as the memory-usage grows with each new state.
+
+Next our linear agent attempted to solve these issues by having a linear function approximation for the Q value. This method allowed us to store information about states in a fixed size $\theta$ vector. It also allowed for generalization unseen states were given a score with some basis in experience. The method linear agent performed very well relative to our baseline method and the identity agent for these reasons. The issue for the linear agent is the linear assumption in the function approximation is likely too constraining to get a good estimate as to the true Q value function. This is due to the fact that the features, such as the grid input, are not independent of one another.
+
+Our Q agent with a neural network function approximation aimed to address some of the limitations of the linear function approximation. The use of several hidden layers with rectified linear unit non-linearities allows us to approximate more complex functions. Additionally, in order to help the convergence of the weights, we implemented replay memory to store previous observations and randomly sample a subset for each update. This lead to a agent that performed better than our linear agent. However this performance came at a cost in terms of runtime as it took significantly longer to compute each move relative to our other approaches.
+
+
+
 
 
 \printbibliography
