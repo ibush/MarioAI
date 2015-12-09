@@ -85,9 +85,9 @@ public static boolean isReplaying = false;
 
     // Neural Network Parameters
     public static int batchSize = 50;
-    public static int replaySize = 5000;
-    public static int h1Size = 100;
-    public static int h2Size = 100;
+    public static int replaySize = 100;
+    public static int h1Size = 50;
+    public static int h2Size = 50;
     public static double decayFactor = 0.5;
 
 

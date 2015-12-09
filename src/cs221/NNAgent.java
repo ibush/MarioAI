@@ -52,11 +52,6 @@ public class NNAgent extends QAgent implements Agent{
         reset();
     }
 
-    // Unpack persistent objects
-    public void setLearnedParams(HashMap learnedParams){
-        this.learnedParams = learnedParams;
-    }
-
     public void integrateObservation(Environment environment) {
         // Get observed state vector
         int[] succState = environment.getSerializedFullObservationZZ(Z_LEVEL_SCENE, Z_LEVEL_ENEMIES);

@@ -25,7 +25,7 @@ public abstract class QAgent implements Agent{
     protected int marioEgoCol;
 
     protected double randomJump;
-    private Iteration iter;
+    private Iteration numUpdates;
 
     protected HashMap learnedParams;
 
@@ -97,9 +97,9 @@ public abstract class QAgent implements Agent{
 
     public double getEpsilonGreedy() {
         if(GlobalOptions.decreasingEpsilonGreedy) {
-            iter.value++;
-            if (iter.value % GlobalOptions.iterationsPerEpsUpdate == 0 && randomJump > GlobalOptions.minEpsilonGreedy) {
-                randomJump = 1.0 / (Math.sqrt(iter.value / GlobalOptions.iterationsPerEpsUpdate));
+            numUpdates.value++;
+            if (numUpdates.value % GlobalOptions.iterationsPerEpsUpdate == 0 && randomJump > GlobalOptions.minEpsilonGreedy) {
+                randomJump = 1.0 / (Math.sqrt(numUpdates.value / GlobalOptions.iterationsPerEpsUpdate));
                 if(randomJump < GlobalOptions.minEpsilonGreedy) randomJump = GlobalOptions.minEpsilonGreedy;
                 //System.out.println("epsilon: " + randomJump);
             }
@@ -123,13 +123,13 @@ public abstract class QAgent implements Agent{
         this.learnedParams = learnedParams;
 
         if(GlobalOptions.decreasingEpsilonGreedy){
-            if(learnedParams.containsKey("iter")) {
-                iter = (Iteration) learnedParams.get("iter");
-                randomJump = 1.0 / (Math.sqrt(iter.value / GlobalOptions.iterationsPerEpsUpdate));
+            if(learnedParams.containsKey("numUpdates")) {
+                numUpdates = (Iteration) learnedParams.get("numUpdates");
+                randomJump = 1.0 / (Math.sqrt(numUpdates.value / GlobalOptions.iterationsPerEpsUpdate));
                 if(randomJump < GlobalOptions.minEpsilonGreedy) randomJump = GlobalOptions.minEpsilonGreedy;
             } else {
-                iter = new Iteration(0);
-                learnedParams.put("iter", iter);
+                numUpdates = new Iteration(0);
+                learnedParams.put("numUpdates", numUpdates);
                 randomJump = 1.0;
             }
         } else {

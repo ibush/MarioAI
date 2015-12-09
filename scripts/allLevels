@@ -8,9 +8,9 @@ do
     mkdir params
     mkdir stats
 
+    java -cp .:../lib/* ch.idsia.scenarios.Main -ag cs221.NNAgent -ld $i -vis off -deps true -meps 0 -iteps 10000
+    java -cp .:../lib/* ch.idsia.scenarios.Main -ag cs221.QLinearAgent -ld $i -vis off -deps true -meps 0 -iteps 10000
     java -cp .:../lib/* ch.idsia.scenarios.Main -ag cs221.QLearningAgent -ld $i -vis off
-    java -cp .:../lib/* ch.idsia.scenarios.Main -ag cs221.QLinearAgent -ld $i -vis off
-    java -cp .:../lib/* ch.idsia.scenarios.Main -ag cs221.NNAgent -ld $i -vis off
 
     mkdir results/level_$i
     mv params results/level_$i
