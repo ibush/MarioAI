@@ -42,7 +42,7 @@ print(ten_level_sum)
 
 # scatter plot
 g <- ggplot(sum_data, aes(x=level, y=dist, colour=agent)) + geom_point()+
-  labs(x='Training Epochs', y='Distance Traveled', colour='Agent')
+  labs(x='Difficulty Level', y='Distance Traveled', colour='Agent')
 pdf(paste0(out_dir, 'dist_levels.pdf'))
 plot(common_format(g))
 dev.off()
