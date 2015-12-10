@@ -31,13 +31,13 @@
 \maketitle
 
 \begin{abstract}
-We implement several reinforcement learning models to learn the optimal actions for a variant of the classic Super Mario Bros game. The game is challenging from an AI standpoint as the environment is stochastic with randomly generated levels, and the state space is large. Our algorithms use Q-learning with differing Q-function approximations. We test the effectiveness of the various approximations relative to their performance and runtime.
+We implement several reinforcement learning models to learn the optimal actions for a variant of the classic Super Mario Bros game. The game is challenging from an AI standpoint as the environment is stochastic, and the state space is large. Our algorithms use Q-learning with differing Q-function approximations including a linear and neural network approach. We test the effectiveness of the various approximations relative to their performance and runtime. We find that the neural network approximation performs best on our baseline task as well as across varying levels of difficulty.
 
 \end{abstract}
 
 \section{Related Work}
 
-A Super Mario Bros competition started in 2009 as a way to benchmark AI algorithms on the task of creating an effective controller for the game \cite{togelius20102009}. In the first iteration, the best performing agents were ones based on open-loop path planning algorithms such A*. The most successful of these algorithms built an extensive internal model of the game to find optimal paths to the end goal. The best submissions that involved some form of learning for the follow-up competition were based off of a combination of search and evolutionary algorithms \cite{karakovskiy2012mario}.
+The Super Mario Bros competition started in 2009 as a way to benchmark AI algorithms on the task of creating an effective controller for the game \cite{togelius20102009}. In the first iteration, the best performing agents were ones based on open-loop path planning algorithms such A*. The most successful of these algorithms built an extensive internal model of the game to find optimal paths to the end goal. The best submissions that involved some form of learning for the follow-up competition were based off of a combination of search and evolutionary algorithms \cite{karakovskiy2012mario}.
 
 Outside of the official competition there have been several attempts at using reinforcement for the simulation, such as Q-learning in \cite{liao2012cs229}. This implementation involves hand crafted features and uses a simple lookup as the Q-function approximation. To create a controller that can instead translate the raw input from the game to optimal actions, we draw inspiration from recent deep learning approaches applied in \cite{mnih2013playing}. In this study, researchers applied a convolutional neural network to map raw pixel values to actions for several Atari games and were able achieve super-human performance on several of the games they tested. In this paper we experiment with this approach to determine if a similar neural network can achieve high performance in the Mario game, which appears to be a more complex learning task.
 
@@ -115,10 +115,19 @@ The performance of our neural network agent starts at the level of the linear ag
 \subsection{Runtime Analysis}
 
 \begin{figure}
+\begin{minipage}{0.5\textwidth}
 \includegraphics[scale=0.5]{imgs/runtime_bar.pdf}
 \caption{Mean runtime per step by method}
 \label{runtime_bar}
+\end{minipage}
+\begin{minipage}{0.5\textwidth}
+\includegraphics[scale=0.5]{imgs/dist_levels.pdf}
+\caption{Comparison between different agents by mean progress in each level}
+\label{scatter_levels}
+\end{minipage}
 \end{figure}
+
+
 
 We plot the runtime per step in Figure \ref{runtime_bar}. A step involves the agent updating parameters as well as choosing an action. We can see that random agent and identity agent are very fast in choosing an action, but as we saw previously, these agents have the worst performance. This is intuitive as the random agent does not have parameters to update and simply uses a random number generator. While the identity agent does have an update step it only does add and lookup operations.
 
@@ -130,15 +139,10 @@ To tune hyperparameters for our agents, we implemented scripts to vary each of t
 
 We tested with varying static epsilon-greedy values as well as decreasing epsilon-greedy values. We found that the identity agent performs similarly with static and decreasing epsilon-greedy values. This is likely because it must choose a random action for any unseen states, regardless of the epsilon-greedy parameter (a random action is chosen even if the policy is to be greedy). For the linear and neural network agents, a decreasing epsilon-greedy value that begins at 1 and decreases by $\sqrt{updates / 10000}$ every 10,000 time-steps was found to perform the best. This allows these agents to explore the state-space at the beginning, but use the optimal policy as learning progresses and during analysis.
 
-We also tuned the neural network hyperparameters of the size of hidden states and the size of the replay memory. We found the distance travelled improved as the number of hidden states increased to about 50, but remained relatively constant after that. Since the computation time increases exponentially as the hidden state size increases, we set these values to 50. The replay memory also improved results between a size of 1 (no replay) and 10 (look at last 10 time-steps when performing gradient descent), but results are fairly steady when increased further. Thus a replay size of 10 could minimize the memory usage.
+For the neural network we also tuned the size of hidden states and the size of the replay memory. We found the distance travelled improved as the number of hidden states increased to about 50, but remained relatively constant after that. Since the computation time increases exponentially as the hidden state size increases, we set these values to 50. The replay memory also improved results between a size of 1 (no replay) and 10 (look at last 10 time-steps when performing gradient descent), but results are fairly steady when increased further. Thus a replay size of 10 could minimize the memory usage.
 
 \subsection{Comparison to Previous Methods}
 
-\begin{figure}
-\includegraphics[scale=0.5]{imgs/dist_levels.pdf}
-\caption{Comparison between different agents by mean progress in each level}
-\label{scatter_levels}\
-\end{figure}
 
 \begin{table}[]
 \centering
