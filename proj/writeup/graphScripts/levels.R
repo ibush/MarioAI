@@ -1,14 +1,14 @@
 library(ggplot2)
 library(dplyr)
 
-source(paste0(src_dir, 'formats.R'))
-
 # Directory Structure
 wd <- '~/Documents/Stanford/CS221/mario/marioai/'
 proj_dir <- paste0(wd,'proj/')
 data_dir <- paste0(proj_dir, 'data/allLevels/')
 out_dir  <- paste0(proj_dir, 'writeup/imgs/')
 src_dir  <- paste0(proj_dir, 'writeup/graphScripts/')
+
+source(paste0(src_dir, 'formats.R'))
 
 agents <- c('RandomAgent', 'QLearningAgent', 'QLinearAgent', 'NNAgent')
 
@@ -23,6 +23,7 @@ for(agent in agents){
     data$level <- i
     data$agent <- agent
     if(agent == 'QLearningAgent') data$agent <- 'IdentityAgent'
+    if(agent == 'QLinearAgent') data$agent <- 'LinearAgent'
     agent_data <- rbind(agent_data, data)
   }
   min_ind <- 1950 # store last 50 runs

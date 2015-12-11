@@ -41,6 +41,7 @@ qlinear_agent   <- import_data(qlinear_dir, measure,'QLinearAgent')
 random_agent    <- import_data(random_dir, measure,'RandomAgent')
 qlearning_agent <- import_data(qlearning_dir, measure,'QLearningAgent')
 qlearning_agent$agent <- 'IdentityAgent'
+qlinear_agent$agent <- 'LinearAgent'
 
 data <- rbind(qlinear_agent, random_agent, qlearning_agent, nn_agent)
 data$epoch <- floor(data$iter / epoch_size)
@@ -73,12 +74,13 @@ qlinear_agent   <- import_data(qlinear_dir, measure,'QLinearAgent')
 random_agent    <- import_data(random_dir, measure,'RandomAgent')
 qlearning_agent <- import_data(qlearning_dir, measure,'QLearningAgent')
 qlearning_agent$agent <- 'IdentityAgent'
+qlinear_agent$agent <- 'LinearAgent'
   
 data <- rbind(qlinear_agent, random_agent, qlearning_agent, nn_agent)
 data <- summarise(group_by(data, agent), rt = mean(time/1000))
 
 g <- ggplot(data, aes(x=agent, y=rt)) + geom_bar(stat='identity') +
-  labs(x='Agent',y='Runtime Per Iteation (ms)')
+  labs(x='Agent',y='Runtime Per Iteration (ms)')
 
 pdf(paste0(out_dir, 'runtime_bar.pdf'))
 plot(common_format(g))

@@ -74,7 +74,7 @@ Q(s,a) &= Lookup(\beta(s,a))\\
 
 \subsection{Linear Approximation}
 
-Our linear agent uses the same low-level game features, but fits a linear model to estimate the value function. This model approximates the Q-function by taking a dot product between a vector of learned weights and the input features. The feature vector consists of indicator values for each element of the state vector and every possible action. This yields a feature vector of length $|stateVector| * |Actions| = 733 * 64 = 46,912$. While still large, this is much less than the identity feature vector and can easily fit in memory. And more importantly, this allows the agent to generalize to unseen states and learn more quickly. The weight vector $\theta$ is learned using the Q-function below.
+Our linear agent uses the same low-level game features, but fits a linear model to estimate the value function. This model approximates the Q-function by taking a dot product between a vector of learned weights and the input features. The feature vector consists of indicator values for each element of the state vector and every possible action. This yields a feature vector of length $|stateVector| * |Actions| = 733 * 16 = 11,728$. While still large, this is much less than the identity feature vector and can easily fit in memory. And more importantly, this allows the agent to generalize to unseen states and learn more quickly. The weight vector $\theta$ is learned using the Q-function below.
 
 \begin{align*}
 Q(s,a) &= \theta^T \beta(s,a)\\
@@ -131,7 +131,7 @@ The performance of our neural network agent starts at the level of the linear ag
 
 We plot the runtime per step in Figure \ref{runtime_bar}. A step involves the agent updating parameters as well as choosing an action. We can see that random agent and identity agent are very fast in choosing an action, but as we saw previously, these agents have the worst performance. This is intuitive as the random agent does not have parameters to update and simply uses a random number generator. While the identity agent does have an update step it only does add and lookup operations.
 
-Conversely, both the neural network agent and the linear agent take a non-trivial amount of time to update. Both update and action evaluation steps for these agents require matrix multiplications. These networks however performed the best. As we can see there is a trade-off between agent speed and performance.
+Conversely, both the neural network agent and the linear agent take a non-trivial amount of time to update. Both update and action evaluation steps for these agents require matrix multiplications. These networks however performed the best. As we can see there is a trade-off between agent speed and performance. Still, these update times are well within the 42ms of available time between frames at the standard simulation speed of 24 fps.
 
 \subsection{Parameter Tuning}
 
@@ -139,7 +139,7 @@ To tune hyperparameters for our agents, we implemented scripts to vary each of t
 
 We tested with varying static epsilon-greedy values as well as decreasing epsilon-greedy values. We found that the identity agent performs similarly with static and decreasing epsilon-greedy values. This is likely because it must choose a random action for any unseen states, regardless of the epsilon-greedy parameter (a random action is chosen even if the policy is to be greedy). For the linear and neural network agents, a decreasing epsilon-greedy value that begins at 1 and decreases by $\sqrt{updates / 10000}$ every 10,000 time-steps was found to perform the best. This allows these agents to explore the state-space at the beginning, but use the optimal policy as learning progresses and during analysis.
 
-For the neural network we also tuned the size of hidden states and the size of the replay memory. We found the distance travelled improved as the number of hidden states increased to about 50, but remained relatively constant after that. Since the computation time increases exponentially as the hidden state size increases, we set these values to 50. The replay memory also improved results between a size of 1 (no replay) and 10 (look at last 10 time-steps when performing gradient descent), but results are fairly steady when increased further. Thus a replay size of 10 could minimize the memory usage.
+For the neural network we also tuned the size of hidden states. We found the distance travelled improved as the number of hidden states increased to about 50, but remained relatively constant after that. Since the computation time increases exponentially as the hidden state size increases, we set these values to 50. The replay memory also improved results between a size of 1 (no replay) and 100, but results are fairly steady when increased further. Thus a replay size of 100 could minimize the memory usage.
 
 \subsection{Comparison to Previous Methods}
 
@@ -168,7 +168,7 @@ Michael Tulacek                                        & SM                     
 Rafael Oliveira                                          & RB                                                & 6314                                                &  &  \\ \cline{1-3}
 Glenn Hartmann                                       & RB                                                & 1060                                                &  &  \\ \cline{1-3}
 \end{tabular}
-\caption{Distance travelled by our Q-Learning agents compared with 2009 Mario Competition results from \cite{karakovskiy2012mario}. Approaches are A*, rule-based (RB), reinforcement learning (RL), neural network (NN), genetic programming (GP), and state machine (SM)}
+\caption{Distance travelled by our Q-Learning agents compared with 2009 Mario Competition results from \cite{karakovskiy2012mario}. Approaches are A*, rule-based (RB), reinforcement learning (RL), neural network (NN), genetic programming (GP), and state machine (SM).}
 \label{table_levels}
 \end{table}
 
@@ -182,9 +182,9 @@ We started our Q-learning agent with the identity agent which attempts to map lo
 
 Next our linear agent attempted to solve these issues by having a linear function approximation for the Q-value. This method allowed us to store information about states in a fixed size vector. It also allowed for generalization as unseen states were given a score with some basis in experience. The linear agent performed very well relative to our baseline method and the identity agent for these reasons. The limitation for the linear agent is the linear assumption in the function approximation is likely too constraining to be a good estimate of the true Q-value function. This is due to the fact that the features, such as the grid input, are not independent of one another.
 
-Our Q-agent with a neural network function approximation aimed to address some of the limitations of the linear function approximation. The use of several hidden layers with rectified linear unit non-linearities allows us to approximate more complex functions. Additionally, in order to help the convergence of the weights, we implemented replay memory to store previous observations and randomly sample a subset for each update. This lead to an agent that performed better than our linear agent. However this performance came at a cost in terms of runtime as it took significantly longer to compute each move relative to our other approaches.
+Our Q-agent with a neural network function approximation aimed to address some of the limitations of the linear function approximation. The use of several hidden layers with rectified linear unit non-linearities allows us to approximate more complex functions. Additionally, in order to help the convergence of the weights, we implemented replay memory to store previous observations and randomly sample a subset for each update. This lead to an agent that performed better than our linear agent. However the performance improvements come at a cost in terms of runtime as it takes  longer to compute each move relative to our other approaches.
 
-While none of our agents were able to outperform the top agents from the Mario AI competition, our linear and neural network agents were only topped by A* and rule-based controllers, which require extensive knowledge of the game setup and rules. Considering that our agents learned all of this game information from only the raw input provided by the simulation, we believe this shows great promise for using reinforcement learning on the Mario game. The advantage of these learning agents, as compared to the search and rule-based agents, is that if presented with a very different environment (with new rules, obstacles, and rewards), these agents would adapt to the new environment without any model modifications.
+Although none of our agents were able to outperform the top agents from the Mario AI competition, our linear and neural network agents were only topped by A* and rule-based controllers, which require extensive knowledge of the game setup and rules. Considering that our agents learned all of this game information from only the raw input provided by the simulation, we believe this shows great promise for using reinforcement learning on the Mario game. The advantage of these learning agents, as compared to the search and rule-based agents, is that if presented with a very different environment (with new rules, obstacles, and rewards), these agents would adapt to the new environment without any model modifications.
 
 
 \printbibliography
