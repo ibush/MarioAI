@@ -44,6 +44,7 @@ qlearning_agent$agent <- 'IdentityAgent'
 
 data <- rbind(qlinear_agent, random_agent, qlearning_agent, nn_agent)
 data$epoch <- floor(data$iter / epoch_size)
+data <- subset(data, epoch != 20) #there is only one observation in this bin
 
 # Line Graph
 line_data <- summarise(group_by(data, epoch, agent), mdist=mean(distance))
