@@ -78,7 +78,7 @@ qlearning_agent$agent <- 'IdentityAgent'
 qlinear_agent$agent <- 'LinearAgent'
   
 data <- rbind(qlinear_agent, random_agent, qlearning_agent, nn_agent)
-data <- summarise(group_by(data, agent), rt = mean(time/1000))
+data <- summarise(group_by(data, agent), rt = mean(time/1000000))
 
 g <- ggplot(data, aes(x=agent, y=rt)) + geom_bar(stat='identity') +
   labs(x='Agent',y='Runtime Per Iteration (ms)')
